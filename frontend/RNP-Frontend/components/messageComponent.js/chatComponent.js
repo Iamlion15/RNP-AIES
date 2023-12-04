@@ -97,15 +97,28 @@ const ChatComponent = ({ data,message,setMessage }) => {
 
 
     return (
-        <div className="d-flex flex-column" style={{ height: '100%' }}>
+        <div className="d-flex flex-column font-monospace" style={{ height: '100%' }}>
             <div className="border-bottom">
-                <p style={{fontFamily:"serif",fontSize:"1.5em"}}><strong>{data.names}</strong></p>
+                <p style={{fontSize:"1.5em"}}><strong>{data.names}</strong></p>
             </div>
                     <div className="m-3">
                         {!isNew && (<span className="mb-2">This message will be sent to : <strong> {data.names}</strong> 's document,</span>)}
                         <div className="mt-2">
                             {isNew && chats && chats.chat && (
-                                <div className="bg-light" style={{ maxHeight: '300px', overflowY: 'auto' }} ref={tableRef}>
+                                <div className="bg-light" style={{ maxHeight: '250px', overflowY: 'auto',scrollbarWidth: 'thin', msOverflowStyle: 'none' }} ref={tableRef}>
+                                    <style>
+    {`
+      /* Hide scrollbar for Chrome, Safari, and Edge */
+      ::-webkit-scrollbar {
+        width: 0;
+      }
+
+      /* Optional: Style scrollbar track if you want to customize its appearance */
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    `}
+  </style>
                                     <table className="table table-borderless" style={{ tableLayout: 'fixed' }} >
                                         <tbody>
                                             {chats.chat.messages.map((chat, index) => (
@@ -119,6 +132,7 @@ const ChatComponent = ({ data,message,setMessage }) => {
                                                                     width: '50%', // Set your desired max width
                                                                     whiteSpace: 'pre-wrap',
                                                                     overflowWrap: 'break-word', // Add this line
+                                                                    wordBreak: 'break-all',
                                                                 }}
                                                             >
                                                                 <p className="text-dark rounded-3" style={{border:"4px solid #d1e6ff"}}><span className="mx-2 my-2" style={{ display: 'inline-block' }}>{chat.content}</span></p>

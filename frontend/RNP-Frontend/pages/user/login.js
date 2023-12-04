@@ -34,8 +34,8 @@ const UserLogin = () => {
             else if (role === "POLICE ADMIN") {
                 Router.push("/ADMIN")
             }
-            else if (role === "EBS") {
-                Router.push("/EBS")
+            else if (role === "POLICE OFFICER") {
+                Router.push("/OFFICER")
             }
             else if (role === "RSB") {
                 Router.push("/RSB")
@@ -112,7 +112,7 @@ const UserLogin = () => {
                             </div>
                             <div className="col">
                                 <Image
-                                    src="/images/logine.jpg"
+                                    src="/images/Rwanda_National_Police.png"
                                     width={500}
                                     height={500}
                                 />

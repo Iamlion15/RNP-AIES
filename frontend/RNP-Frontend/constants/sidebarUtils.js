@@ -28,14 +28,14 @@ const SidebarItems = {
             },
         ]
     },
-    EBS: {
+    OFFICER: {
         items: [
             {
                 ...defaultItem,
                 link: ""
             },
             {
-                title: "Review Requests",
+                title: "Review scene",
                 icon: <i class="bi bi-binoculars-fill mx-2"></i>,
                 link: ""
             },
@@ -45,7 +45,7 @@ const SidebarItems = {
                 link: ""
             },
             {
-                title: "Vendors",
+                title: "CASES",
                 icon: <i class="bi bi-receipt-cutoff mx-2"></i>,
                 link: ""
             },
