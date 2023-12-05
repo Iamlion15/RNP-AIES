@@ -16,14 +16,17 @@ const userSchema=new mongoose.Schema({
     email:{
         type:String,
         unique:true,
-        required:true
+
     },
     role:{
         type:String,
         default:"POLICE OFFICER",
-        enum:["POLICE ADMIN","POLICE OFFICER"]
+        enum:["POLICE ADMIN","POLICE OFFICER","CITIZEN"]
     },
     password:{
+        type:String,
+    },
+    drivingLicense:{
         type:String,
         required:true
     }

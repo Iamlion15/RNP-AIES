@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-const ChatComponent = ({ data,message,setMessage }) => {
+const ChatComponent = ({ data, message, setMessage }) => {
     const [activateConfrim, setActivateConfirm] = useState(false);
     const [loggedInUserId, setLoggedInUserId] = useState('')
     const [isNew, setIsNew] = useState(true)
@@ -99,15 +99,15 @@ const ChatComponent = ({ data,message,setMessage }) => {
     return (
         <div className="d-flex flex-column font-monospace" style={{ height: '100%' }}>
             <div className="border-bottom">
-                <p style={{fontSize:"1.5em"}}><strong>{data.names}</strong></p>
+                <p style={{ fontSize: "1.5em" }}><strong>{data.names}</strong></p>
             </div>
-                    <div className="m-3">
-                        {!isNew && (<span className="mb-2">This message will be sent to : <strong> {data.names}</strong> 's document,</span>)}
-                        <div className="mt-2">
-                            {isNew && chats && chats.chat && (
-                                <div className="bg-light" style={{ maxHeight: '250px', overflowY: 'auto',scrollbarWidth: 'thin', msOverflowStyle: 'none' }} ref={tableRef}>
-                                    <style>
-    {`
+            <div className="m-3">
+                {!isNew && (<span className="mb-2">This message will be sent to : <strong> {data.names}</strong> 's document,</span>)}
+                <div className="mt-2">
+                    {isNew && chats && chats.chat && (
+                        <div className="bg-light" style={{ maxHeight: '250px', overflowY: 'auto', scrollbarWidth: 'thin', msOverflowStyle: 'none' }} ref={tableRef}>
+                            <style>
+                                {`
       /* Hide scrollbar for Chrome, Safari, and Edge */
       ::-webkit-scrollbar {
         width: 0;
@@ -118,72 +118,72 @@ const ChatComponent = ({ data,message,setMessage }) => {
         background: transparent;
       }
     `}
-  </style>
-                                    <table className="table table-borderless" style={{ tableLayout: 'fixed' }} >
-                                        <tbody>
-                                            {chats.chat.messages.map((chat, index) => (
-                                                <tr key={index}>
-                                                    {chat.sender.userId === loggedInUserId && (
-                                                        <>
-                                                            <td></td>
-                                                            <td
-                                                                style={{
-                                                                    textAlign: 'left',
-                                                                    width: '50%', // Set your desired max width
-                                                                    whiteSpace: 'pre-wrap',
-                                                                    overflowWrap: 'break-word', // Add this line
-                                                                    wordBreak: 'break-all',
-                                                                }}
-                                                            >
-                                                                <p className="text-dark rounded-3" style={{border:"4px solid #d1e6ff"}}><span className="mx-2 my-2" style={{ display: 'inline-block' }}>{chat.content}</span></p>
-                                                            </td>
-                                                        </>
-                                                    )}
-                                                    {chat.sender.userId !== loggedInUserId && (
-                                                        <td
-                                                            colSpan={2}
-                                                            style={{
-                                                                textAlign: 'left',
-                                                                width: '50%', // Set your desired max width
-                                                                whiteSpace: 'pre-wrap',
-                                                                overflowWrap: 'break-word', // Add this line
-                                                            }}
-                                                        >
-                                                            <p className="" style={{ fontSize: '1em', fontWeight: 'bold' }}>{chat.content}</p>
-                                                        </td>
-                                                    )}
-                                                </tr>
-                                            ))}
+                            </style>
+                            <table className="table table-borderless" style={{ tableLayout: 'fixed' }} >
+                                <tbody>
+                                    {chats.chat.messages.map((chat, index) => (
+                                        <tr key={index}>
+                                            {chat.sender.userId === loggedInUserId && (
+                                                <>
+                                                    <td></td>
+                                                    <td
+                                                        style={{
+                                                            textAlign: 'left',
+                                                            width: '50%', // Set your desired max width
+                                                            whiteSpace: 'pre-wrap',
+                                                            overflowWrap: 'break-word', // Add this line
+                                                            wordBreak: 'break-all',
+                                                        }}
+                                                    >
+                                                        <p className="text-dark rounded-3" style={{ border: "4px solid #d1e6ff" }}><span className="mx-2 my-2" style={{ display: 'inline-block' }}>{chat.content}</span></p>
+                                                    </td>
+                                                </>
+                                            )}
+                                            {chat.sender.userId !== loggedInUserId && (
+                                                <td
+                                                    colSpan={2}
+                                                    style={{
+                                                        textAlign: 'left',
+                                                        width: '50%', // Set your desired max width
+                                                        whiteSpace: 'pre-wrap',
+                                                        overflowWrap: 'break-word', // Add this line
+                                                    }}
+                                                >
+                                                    <p className="" style={{ fontSize: '1em', fontWeight: 'bold' }}>{chat.content}</p>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                    
-                        <div style={{ position: 'absolute', bottom: 30, width: '40%' }}>
-                            <p className="m-0 p-0" style={{ fontSize: '0.8em', fontWeight: 'bold' }}>
-                                <small>Type in below your message</small>
-                            </p>
-                            <div className="d-flex flex-row">
-                                <input
-                                    type="text"
-                                    placeholder="Type something..."
-                                    className="form-control rounded-3"
-                                    value={message.content}
-                                    style={{marginRight:"20px"}}
-                                    required
-                                        onChange={handleInput}
-                                />
-                                
-                                <button type="button" className={!activateConfrim ? "btn btn-light" : "btn btn-primary"} disabled={!activateConfrim} onClick={handleSendMessage}>
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    <div style={{ position: 'absolute', bottom: 30, width: '40%' }}>
+                        <p className="m-0 p-0" style={{ fontSize: '0.8em', fontWeight: 'bold' }}>
+                            <small>Type in below your message</small>
+                        </p>
+                        <div className="d-flex flex-row">
+                            <input
+                                type="text"
+                                placeholder="Type something..."
+                                className="form-control rounded-3"
+                                value={message.content}
+                                style={{ marginRight: "20px" }}
+                                required
+                                onChange={handleInput}
+                            />
+
+                            <button type="button" className={!activateConfrim ? "btn btn-light" : "btn btn-primary"} disabled={!activateConfrim} onClick={handleSendMessage}>
                                 <div className="d-flex flex-row ">
                                     <span className="mx-1">Send</span>
                                     <i class="bi bi-send-fill"></i>
-                                    </div>
-                                    </button>
-                            </div>
+                                </div>
+                            </button>
                         </div>
-                        <div>
+                    </div>
+                    <div>
 
                     </div>
                 </div>
