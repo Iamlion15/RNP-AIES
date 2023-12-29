@@ -2,30 +2,30 @@ import { useState } from "react";
 import { Modal, ModalHeader } from "reactstrap";
 import { toast } from "react-toastify";
 
-const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed }) => {
+const UserDetailsModal = ({ modalIsOpen, toggleModal, data, setData, index, setProceed }) => {
     const [userDetail, setUserDetail] = useState({
         firstname: "",
         lastname: "",
         email: "",
         nID: "",
-        drivingLicense:""
+        drivingLicense: ""
     })
     const saveUserDetails = () => {
-        if (userDetail.firstname.trim() === "" && userDetail.lastname.trim() === "" && userDetail.email.trim() === "" && userDetail.nID.trim() === "") {
+        if (data[index].owner.firstname.trim() === "" && data[index].owner.lastname.trim() === "" && data[index].owner.email.trim() === "" && data[index].owner.nID.trim() === "" && data[index].owner.drivingLicense.trim() === "") {
             toast.error("Please fill in all data!", {
                 position: toast.POSITION.TOP_RIGHT, autoClose: 10000
             });
         }
         else {
-            const updatedData = [...data];
-            updatedData[index].owner.firstname = userDetail.firstname;
-            updatedData[index].owner.lastname = userDetail.lastname;
-            updatedData[index].owner.email = userDetail.email;
-            updatedData[index].owner.nID = userDetail.nID;
-            updatedData[index].owner.drivingLicense = userDetail.drivingLicense;
             setProceed(true)
             toggleModal()
         }
+    }
+
+    const handleInputChange = (field, value) => {
+        const updatedData = [...data]
+        updatedData[index].owner[field] = value
+        setData(updatedData)
     }
 
     return (
@@ -44,8 +44,8 @@ const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed })
                                 <td><input type="text"
                                     placeholder="Fisrt name"
                                     className="form-control"
-                                    value={userDetail.firstname}
-                                    onChange={(e) => setUserDetail({ ...userDetail, firstname: e.target.value })}
+                                    value={data[index].owner.firstname}
+                                    onChange={(e) => handleInputChange("firstname", e.target.value)}
                                 /></td>
                             </tr>
                             <tr>
@@ -53,8 +53,8 @@ const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed })
                                 <td><input type="text"
                                     placeholder="Last name"
                                     className="form-control"
-                                    value={userDetail.lastname}
-                                    onChange={(e) => setUserDetail({ ...userDetail, lastname: e.target.value })}
+                                    value={data[index].owner.lastname}
+                                    onChange={(e) => handleInputChange("lastname", e.target.value)}
                                 /></td>
                             </tr>
                             <tr>
@@ -62,8 +62,8 @@ const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed })
                                 <td><input type="text"
                                     placeholder="National ID"
                                     className="form-control"
-                                    value={userDetail.nID}
-                                    onChange={(e) => setUserDetail({ ...userDetail, nID: e.target.value })}
+                                    value={data[index].owner.nID}
+                                    onChange={(e) => handleInputChange("nID", e.target.value)}
                                 /></td>
                             </tr>
                             <tr>
@@ -71,8 +71,8 @@ const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed })
                                 <td><input type="email"
                                     placeholder="email"
                                     className="form-control"
-                                    value={userDetail.email}
-                                    onChange={(e) => setUserDetail({ ...userDetail, email: e.target.value })}
+                                    value={data[index].owner.email}
+                                    onChange={(e) => handleInputChange("email", e.target.value)}
                                 /></td>
                             </tr>
                             <tr>
@@ -80,8 +80,8 @@ const UserDetailsModal = ({ modalIsOpen, toggleModal, data, index, setProceed })
                                 <td><input type="text"
                                     placeholder="driving ID"
                                     className="form-control"
-                                    value={userDetail.drivingLicense}
-                                    onChange={(e) => setUserDetail({ ...userDetail, drivingLicense: e.target.value })}
+                                    value={data[index].owner.drivingLicense}
+                                    onChange={(e) => handleInputChange("drivingLicense", e.target.value)}
                                 /></td>
                             </tr>
                         </tbody>

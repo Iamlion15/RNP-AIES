@@ -1,31 +1,41 @@
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
 
-const caseSchema=new mongoose.Schema({
-    
-    location:{
-        province:String,
-        district:String,
-        sector:String,
-        cell:String
+const caseSchema = new mongoose.Schema({
+    location: {
+        province: String,
+        district: String,
+        sector: String,
+        cell: String
     },
-    OPG:{
+    ReportStatus:{
+        type:String,
+        default:"pending",
+        enum:["answered","pending","under-review","completed"]
+
+    },
+    OPG: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
     },
-    participants:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-    }],
-        vehicleInfo:{
+    participants: [{
+        driver: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+        },
+        vehicleInfo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "vehicle",
-    },
-    answers:[{
+        },
+        drunk: {
+            type:Boolean
+        },
+    }],
+    answers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Answer",
-    }],  
-})
+    }],
+});
 
-const caseModel=mongoose.model("case",caseSchema);
+const caseModel = mongoose.model("case", caseSchema);
 
-module.exports=caseModel;
+module.exports = caseModel;

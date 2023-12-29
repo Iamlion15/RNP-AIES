@@ -3,7 +3,6 @@ import React from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Link from 'next/link';
 import getSidebarItems from '@/constants/sidebarUtils';
-import Image from 'next/image';
 
 const PoliceSideNav = ({ setPage, logout }) => {
     const buttonStyle = {

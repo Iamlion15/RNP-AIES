@@ -6,6 +6,8 @@ import HeaderComponent from "@/components/Header/Header";
 import AddOfficer from "./addOfficer";
 import PoliceOfficersView from "./policeOfficersView";
 import Messages from "./Messages";
+import AddQuestions from "./addQuestions";
+import ListOfQuestions from "./listOfQuestions";
 
 
 
@@ -31,8 +33,11 @@ const Index = () => {
                          {page === "Police officers" && (
                             <PoliceOfficersView  style={{ width: '100%' }}/>
                         )}
-                        {page === "Messages" && (
-                            <Messages  style={{ width: '100%' }}/>
+                        {page === "Questions" && (
+                            <AddQuestions  style={{ width: '100%' }}/>
+                        )}
+                        {page === "List of questions" && (
+                            <ListOfQuestions  style={{ width: '100%' }}/>
                         )}
                     </div>
                 </div>

@@ -5,10 +5,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import StartCase from "@/components/policeOfficerComponent/startCase";
 import CaseDetails from "@/components/policeOfficerComponent/caseDetails";
 import TestDetailCase from "@/components/policeOfficerComponent/testDetails";
+import ParticipantDrunkTest from "@/components/policeOfficerComponent/participantsDrunkTest";
 
 const CaseScenario = () => {
     const [step, setStep] = useState(1)
     const [selectedOption, setSelectedOption] = useState(null);
+    const [proceed,setProceed]=useState(false)
     const [locationDetails, setLocationDetails] = useState({
         province: "",
         district: "",
@@ -19,6 +21,7 @@ const CaseScenario = () => {
         plateNo: "",
         insuranceProvider: "",
         insuranceNumber: "",
+        drunkTest: "",
         owner: {
             firstname: "",
             lastname: "",
@@ -39,6 +42,10 @@ const CaseScenario = () => {
 
     const startCaseScenario = async (e) => {
         e.preventDefault();
+        toastId.current = toast.info("LOADING............", {
+            position: toast.POSITION.TOP_LEFT,
+            autoClose: false
+        })
         const config = {
             headers: {
                 'Content-Type': "application/json",
@@ -99,14 +106,28 @@ const CaseScenario = () => {
 
                 <div className="mt-3">
                     {step === 1 && <StartCase locationDetails={locationDetails} setLocationDetails={setLocationDetails} nextStep={nextStep} />}
-                    {step === 2 && <CaseDetails data={data} setData={setData} nextStep={nextStep} prevStep={prevStep} />}
-                    {step === 3 && <TestDetailCase setSelectedOption={setSelectedOption} selectedOption={selectedOption} prevStep={prevStep} />}
+                    {step === 2 && <CaseDetails data={data} setData={setData}  setProceed={setProceed} />}
+                    {step === 3 && <ParticipantDrunkTest setSelectedOption={setSelectedOption} selectedOption={selectedOption} prevStep={prevStep} data={data} setData={setData} startCaseScenario={startCaseScenario} />}
                 </div>
 
                 <div>
                     <ToastContainer />
                 </div>
-            </div>
+                {step > 1 &&
+                    <div className="card-footer">
+                        <div className="row">
+                            <div className="col">
+                                <button className="btn btn-primary btn-sm" onClick={prevStep}>Previous</button>
+                            </div>
+                            {step === 2 &&proceed&&< div className="col">
+                            <div className="d-flex justify-content-end">
+                                <button className="btn btn-primary btn-sm" onClick={nextStep}>Next</button>
+                            </div>
+                        </div>}
+                    </div>
+                    </div>
+                }
+        </div >
         </>
     );
 };

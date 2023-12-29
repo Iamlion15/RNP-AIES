@@ -3,10 +3,9 @@ import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import UserDetailsModal from "../Modals/addUserDetailsModal";
 
-const CaseDetails = ({data,setData,nextStep,prevStep}) => {
+const CaseDetails = ({data,setData,setProceed}) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [indexx, setIndexx] = useState('')
-    const [proceed,setProceed]=useState(false)
     const toggleModal = () => {
         setModalIsOpen(!modalIsOpen)
     }
@@ -46,19 +45,6 @@ const CaseDetails = ({data,setData,nextStep,prevStep}) => {
         <>
             <div className="d-flex justify-content-center font-monospace">
                 <p className="display-6">Detailed description of the incident</p>
-            </div>
-            <div className="bg-light">
-                <div className="row">
-                    <div className="col">
-                        <button className="btn btn-outline-primary mx-1" onClick={prevStep}>Previous</button>
-                    </div>
-                    {proceed &&
-                        <div className="col">
-                            <div className="d-flex justify-content-end">
-                                <button className="btn btn-outline-primary mx-1" onClick={nextStep}>Next</button>
-                            </div>
-                        </div>}
-                </div>
             </div>
             <div className="mt-2">
                 <table className="table table-borderless">
@@ -132,6 +118,7 @@ const CaseDetails = ({data,setData,nextStep,prevStep}) => {
                         modalIsOpen={modalIsOpen}
                         toggleModal={toggleModal}
                         data={data}
+                        setData={setData}
                         setProceed={setProceed}
                         index={indexx}
                     />)}

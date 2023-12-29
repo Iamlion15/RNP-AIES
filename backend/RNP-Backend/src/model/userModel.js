@@ -16,7 +16,6 @@ const userSchema=new mongoose.Schema({
     email:{
         type:String,
         unique:true,
-
     },
     role:{
         type:String,
@@ -28,7 +27,6 @@ const userSchema=new mongoose.Schema({
     },
     drivingLicense:{
         type:String,
-        required:true
     }
     
 })

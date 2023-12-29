@@ -22,8 +22,13 @@ const SidebarItems = {
                 link: ""
             },
             {
-                title: "Messages",
-                icon: <i className="bi bi-envelope mx-2"></i>,
+                title: "List of questions",
+                icon: <i class="bi bi-clipboard-x mx-2"></i>,
+                link: ""
+            },
+            {
+                title: "Questions",
+                icon: <i class="bi bi-question-circle mx-2"></i>,
                 link: ""
             },
         ]

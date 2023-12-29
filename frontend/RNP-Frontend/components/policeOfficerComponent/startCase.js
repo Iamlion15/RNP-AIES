@@ -3,7 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-const StartCase = ({locationDetails,setLocationDetails,nextStep}) => {
+const StartCase = ({locationDetails,setLocationDetails,nextStep,startCaseScenario}) => {
     const gotoNextStep=(e)=>{
         e.preventDefault()
         if (locationDetails.province.trim() === "" && locationDetails.district.trim() === "" && locationDetails.sector.trim() === "" && locationDetails.cell.trim() === "" ) {
