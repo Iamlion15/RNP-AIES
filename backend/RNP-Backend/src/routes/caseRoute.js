@@ -12,7 +12,7 @@ router.post('/addquestion',checkAuthentication,checkPoliceAdminAuthorization,add
 router.get('/get/questions',checkAuthentication,checkPoliceAdminAuthorization,ListOfQuestions)
 router.delete('/delete/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,deleteQuestion)
 router.post('/update/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,UpdateQuestion)
-router.get('/getcases',getCases)
+router.post('/getcases',getCases)
 
 
 

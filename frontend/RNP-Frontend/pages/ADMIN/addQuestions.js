@@ -53,7 +53,7 @@ const AddQuestions = () => {
 
     return (
         <>
-            <div className="font-monospace shadow-lg card mx-5" style={{ backgroundColor: "#FFFFFF" }}>
+            <div className="font-monospace shadow-sm card mx-5" style={{ backgroundColor: "#FFFFFF" }}>
                 <div className="card-header bg-primary">
                     <div className="d-flex justify-content-center">
                         <h3 className="lead text-white">POLICE ASKED QUESTIONS</h3>
@@ -72,7 +72,6 @@ const AddQuestions = () => {
                             {data.map((question, index) => (
                                 <tr key={index} >
                                     <td>{index + 1}</td>
-
                                     <td>
                                         <div className="form-group">
                                             <input

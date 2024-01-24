@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DrunkTestModal from "../Modals/drunkTestModal";
 
-const ParticipantDrunkTest = ({ data, setData, setSelectedOption, selectedOption }) => {
+const ParticipantDrunkTest = ({ data, setData, setSelectedOption, selectedOption,startCaseScenario }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [startCase, setStartCase] = useState(false)
     const [names, setNames] = useState();
@@ -56,7 +56,7 @@ const ParticipantDrunkTest = ({ data, setData, setSelectedOption, selectedOption
                     </tbody>
                 </table>
                 <div className="d-flex justify-content-end">
-                    <button className="btn btn-sm btn-primary my-2 mx-2" disabled={startCase}>Start case</button>
+                    <button className="btn btn-sm btn-primary my-2 mx-2" disabled={startCase} onClick={startCaseScenario}>Start case</button>
                 </div>
                 {modalIsOpen && <DrunkTestModal selectedOption={selectedOption} setSelectedOption={setSelectedOption} modalIsOpen={modalIsOpen} toggleModal={toggleModal} data={data} setData={setData} names={names} index={index} />}
             </div>

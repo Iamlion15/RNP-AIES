@@ -56,15 +56,25 @@ const SidebarItems = {
             },
         ]
     },
-    RSB: {
+    CITIZEN: {
         items: [
             {
                 ...defaultItem,
                 link: ""
             },
             {
-                title: "Review Applications",
+                title: "Review scene",
                 icon: <i class="bi bi-binoculars-fill mx-2"></i>,
+                link: ""
+            },
+            {
+                title: "Feedback",
+                icon: <i class="bi bi-chat-left-fill mx-2"></i>,
+                link: ""
+            },
+            {
+                title: "CASES",
+                icon: <i class="bi bi-receipt-cutoff mx-2"></i>,
                 link: ""
             },
         ]

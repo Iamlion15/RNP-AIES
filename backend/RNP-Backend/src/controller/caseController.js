@@ -106,15 +106,20 @@ exports.deleteQuestion = async (req, res) => {
 }
 
 exports.getCases = async (req, res) => {
+    console.log(req.body)
     try {
-        const data = await caseModel.find()
+        const data = await caseModel.find({ OPG: req.body.OPG })
             .populate("OPG")
             .populate({
                 path: "participants",
                 populate: { path: "driver vehicleInfo" }
             });
-
-        res.status(200).json(data);
+        if (data.length > 0) {
+            res.status(200).json({ cases:data, dataPresent: true })
+        }
+        else {
+            res.status(200).json({ "message": "There is no data found", dataPresent: false })
+        }
     } catch (err) {
         res.status(400).json({ "message": err });
     }

@@ -27,12 +27,12 @@ exports.loginUser = async (req, res) => {
             }
         }
     } catch (error) {
-        return
+        return res.status(500).json({ message: "Failure" })
     }
 }
 
 exports.addUser = async (req, res) => {
-    const newUser = new userModel({ ...req.body,role:"POLICE OFFICER", password: await hash_password(req.body.password) });
+    const newUser = new userModel({ ...req.body, role: "POLICE OFFICER", password: await hash_password(req.body.password) });
     try {
         await newUser.save();
         res.status(200).json({ message: "successfully saved user" })
@@ -43,7 +43,7 @@ exports.addUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
-        const users = await userModel.find({role:"POLICE OFFICER"});
+        const users = await userModel.find({ role: "POLICE OFFICER" });
         res.status(200).json(users)
     } catch (error) {
         res.status(400).json({ error: err })
@@ -88,18 +88,18 @@ exports.checkPassword = async (req, res) => {
     }
 }
 
-exports.updateUserPassword=async(req,res)=>{
-    const newpassword=req.body.newpassword
+exports.updateUserPassword = async (req, res) => {
+    const newpassword = req.body.newpassword
     try {
         const user = await userModel.findOne({ email: req.body.email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         // Update the user document with the new data
-        const password=await hash_password(newpassword)
-        user.password=password;
+        const password = await hash_password(newpassword)
+        user.password = password;
         await user.save();
-        res.status(200).json({ message: "Successfully changed passwords"});
+        res.status(200).json({ message: "Successfully changed passwords" });
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Server error' });
@@ -124,5 +124,40 @@ exports.updateOfficer = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+exports.checkEmail = async (req, res) => {
+    const email = req.body.email
+    try {
+        const citizen = await userModel.findOne({ email, role: "CITIZEN" })
+        if (citizen && !citizen.password) {
+            return res.status(200).json({ confirm: true, user: citizen })
+        }
+        else if(citizen && citizen.password) {
+            return res.status(200).json({confirm:false,message:"Already has record"})
+        }
+        else {
+            return res.status(200).json({ confirm: false })
+        }
+    } catch (err) {
+        return res.status(400).json({ error: err })
+    }
+}
+
+exports.createCitizenPassword = async (req, res) => {
+    const newpassword = req.body.password
+    try {
+        const user = await userModel.findOne({ _id: req.body.id });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const password = await hash_password(newpassword)
+        user.password = password;
+        await user.save();
+        res.status(200).json({ message: "Successfully changed passwords" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
 
 

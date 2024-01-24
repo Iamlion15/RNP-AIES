@@ -11,7 +11,14 @@ const caseSchema = new mongoose.Schema({
         type:String,
         default:"pending",
         enum:["answered","pending","under-review","completed"]
-
+    },
+    sceneReport:{
+        type:String,
+    },
+    caseStatus:{
+        type:String,
+        default:"PENDING",
+        enum:["PENDING","COMPLETE"]
     },
     OPG: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,15 +33,15 @@ const caseSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "vehicle",
         },
+        answers: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Answer",
+        }],
         drunk: {
             type:Boolean
         },
     }],
-    answers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Answer",
-    }],
-});
+},{timestamps:true});
 
 const caseModel = mongoose.model("case", caseSchema);
 

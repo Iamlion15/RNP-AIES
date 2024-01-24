@@ -23,7 +23,7 @@ const UserLogin = () => {
         try {
             const response = await axios.post("http://localhost:8000/api/user/login", data)
             localStorage.setItem("token", JSON.stringify(response.data.token))
-            localStorage.setItem("loggedInUser",JSON.stringify(response.data.loggedInUser))
+            localStorage.setItem("loggedInUser", JSON.stringify(response.data.loggedInUser))
             //  console.log(response.data.user);
             localStorage.setItem("user", JSON.stringify(response.data.user))
             toast.update(toastId.current, { render: "Successfully logged in", type: toast.TYPE.SUCCESS, autoClose: 2000 })
@@ -37,8 +37,8 @@ const UserLogin = () => {
             else if (role === "POLICE OFFICER") {
                 Router.push("/OFFICER")
             }
-            else if (role === "RSB") {
-                Router.push("/RSB")
+            else if (role === "CITIZEN") {
+                Router.push("/CITIZEN")
             }
             else {
                 if (role === "RAB") {
@@ -46,15 +46,16 @@ const UserLogin = () => {
                 }
             }
         } catch (error) {
+            console.log(error);
             try {
                 if (error.response.status === 404) {
-                    setErrorMsg("User not found")
+                    toast.update(toastId.current, { render: "User not found", type: toast.TYPE.ERROR, autoClose: 2000 })
                 }
                 else if (error.response.status === 403) {
-                    setErrorMsg("Email or Password is Invalid")
+                    toast.update(toastId.current, { render: "Email or password is invalid", type: toast.TYPE.ERROR, autoClose: 2000 })
                 }
                 else {
-                    setErrorMsg("Failure")
+                    toast.update(toastId.current, { render: "Failure", type: toast.TYPE.ERROR, autoClose: 2000 })
                 }
             } catch (error) {
                 toast.update(toastId.current, { render: "Failure", type: toast.TYPE.ERROR, autoClose: 2000 })
@@ -105,8 +106,8 @@ const UserLogin = () => {
                                             Signin</button>
                                     </div>
                                     <div className="mt-3">
-                                        <p> <span className="lead text-sm">Do you have an account?</span><span className="text-warning text">     
-                                            <strong>  <Link href="user/signup"><a>Signup?</a></Link></strong></span></p>
+                                        <p> <span className="lead text-sm">Activate account?</span><span className="text-warning text">
+                                            <strong>  <Link href="user/activate"><a>activate?</a></Link></strong></span></p>
                                     </div>
                                 </form>
                             </div>
@@ -119,16 +120,10 @@ const UserLogin = () => {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="card-header alert alert-danger p-0 mx-5" style={{ height: "30px", paddingRight: "40px" }}>
-                        <div className=" d-flex justify-content-center mb-5 ">
-                            <p className="lead"><strong>{errorMsg}</strong></p>
-                        </div>
-                    </div> */}
                 </div>
                 <div className="mt-4">
                     <Footer />
                 </div>
-                {/* toast container */}
                 <div>
                     <ToastContainer />
                 </div>

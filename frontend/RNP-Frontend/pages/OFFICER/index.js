@@ -5,6 +5,7 @@ import Logout from "@/helpers/logout";
 import HeaderComponent from "@/components/Header/Header";
 import CaseScenario from "./caseScenario";
 import Messages from "./Messages";
+import AllCasesDashboard from "./allCasesView";
 
 
 
@@ -30,8 +31,8 @@ const Index = () => {
                          {page === "Police officers" && (
                             <PoliceOfficersView  style={{ width: '100%' }}/>
                         )}
-                        {page === "Messages" && (
-                            <Messages  style={{ width: '100%' }}/>
+                        {page === "CASES" && (
+                            <AllCasesDashboard  style={{ width: '100%' }}/>
                         )}
                     </div>
                 </div>
