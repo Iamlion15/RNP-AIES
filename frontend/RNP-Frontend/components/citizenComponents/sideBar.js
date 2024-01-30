@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import getSidebarItems from '@/constants/sidebarUtils';
 
 const SideNav = ({ setPage, addLeave, staffRole }) => {
-    const buttonStyle = {
-        width: "100%",
-        backgroundColor: "#1b3261"
-    }
     const [sideBarItems, setSideBarItems] = useState([])
     const [activeItem, setActiveItem] = useState('Dashboard');
     const [hoveredItem, setHoveredItem] = useState('')
-    const [systemAdmin,setSystemAdmin]=useState(false)
     const toggleScreens = (item) => {
         setActiveItem(item)
         setPage(item)
@@ -28,7 +24,7 @@ const SideNav = ({ setPage, addLeave, staffRole }) => {
         <>
             <div className='d-flex flex-column mt-5 font-monospace' style={{ backgroundColor: "white", position: "fixed", height: "100vh" }}>
                 <div>
-                    <p className='m-0 p-0' style={{ whiteSpace: 'nowrap' }}>Leave plan</p>
+                    <p className='my-0 p-0 mx-2' style={{ whiteSpace: 'nowrap' }}>Citizen system</p>
                     <hr />
                 </div>
                 <div className='mt-1'>
@@ -51,6 +47,7 @@ const SideNav = ({ setPage, addLeave, staffRole }) => {
                                         onMouseEnter={() => handleHoveredItem(`${item.title}`)}
                                         onMouseLeave={() => handleHoveredItem('')}
                                     >
+                                       {item.icon}
                                         {item.title}
                                     </div>
                                 </li>
@@ -62,7 +59,10 @@ const SideNav = ({ setPage, addLeave, staffRole }) => {
                     <button className="btn btn-outline-primary"
                         onClick={() => addLeave()}
                     >
-                        Add leave
+                        <div className='d-flex flex-row'>
+                            Logout
+                            <i className="bi bi-box-arrow-right mx-2" style={{fontSize:"1.3em"}}></i>
+                        </div>
                     </button>
                 </div>
             </div>

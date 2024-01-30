@@ -1,25 +1,28 @@
 import { useState, useEffect } from "react";
 //import ReviewedDetailModal from "./actualLeaveReviewedDetailInformationModal";
-import {
-    WarningTwoTone,
-    SearchOutlined,
-} from "@ant-design/icons";
+import { formatTextDateInput } from "@/helpers/dateHelper";
 
-const TerminatedCasesView     = ({ leaveData }) => {
+const TerminatedCasesView = ({ reviewedData }) => {
+    console.log(reviewedData);
     const [data, setData] = useState([])
     const [search, setSearch] = useState("")
     const [dataAvailable, setDataAvailable] = useState(false)
     const [showLeaveDetails, setShowLeaveDetails] = useState(false)
+    const [searchType, setSearchType] = useState({
+        name: "Staff name",
+        codeName: "empNames",
+        role: "lineManager"
+    })
     const [leaveDetails, setLeaveDetails] = useState({
         leaveType: "",
         startDate: "",
         endDate: "",
         department: "",
         returnDate: "",
-        actingPerson:"",
+        actingPerson: "",
         daysTaken: "",
         managerRequestDate: "",
-        manager:"",
+        manager: "",
         staff: "",
         supervisorrequestdate: "",
         supervisor: ""
@@ -34,9 +37,9 @@ const TerminatedCasesView     = ({ leaveData }) => {
             endDate: leave.actualLeave.endDate,
             returnDate: leave.actualLeave.returnDate,
             daysTaken: leave.actualLeave.daysTaken,
-            actingPerson:leave.actualLeave.actingPerson.names,
+            actingPerson: leave.actualLeave.actingPerson.names,
             managerRequestDate: leave.actualLeave.managerRequestDate,
-            manager:leave.actualLeave.lineManagerApproval.lineManager.names,
+            manager: leave.actualLeave.lineManagerApproval.lineManager.names,
             staff: leave.leaveInfo.staff.empNames,
             department: leave.leaveInfo.staff.department,
             supervisorrequestdate: leave.actualLeave.supervisorRequestDate,
@@ -46,43 +49,50 @@ const TerminatedCasesView     = ({ leaveData }) => {
     };
     const prepData = async () => {
         const dataStatus = [];
-        if (leaveData.dataPresent) {
-            let count = 0;
-            for (let i = 0; i < leaveData.leave.length; i++) {
-                const currentLeaveInformation = leaveData.leave[i]
-                if (currentLeaveInformation.actualLeave.hrManagerApproval.requestStatus === "REJECTED" || currentLeaveInformation.actualLeave.hrManagerApproval.requestStatus === "APPROVED")  {
-                    count++;
-                    dataStatus.push(leaveData.leave[i])
-                }
+        let count = 0;
+        for (let i = 0; i < reviewedData.length; i++) {
+            console.log("hello");
+            const reviewedCase = reviewedData[i]
+            if (reviewedCase.caseStatus === "REVIEWED") {
+                count++
+                dataStatus.push(reviewedCase)
             }
-            setData(dataStatus)
-            if (count > 0) {
-                setDataAvailable(true)
-            }
-            else {
-                setDataAvailable(false)
-            }
+        }
+        console.log(dataStatus);
+        if (count > 0) {
+            setData(dataStatus);
+            setDataAvailable(true)
+        }
+        else {
+            setDataAvailable(false)
         }
     };
     useEffect(() => {
         prepData();
     }, [])
 
-    const filteredData = data.filter(searchedLeave => searchedLeave.leaveInfo.staff.empNames.toLowerCase().startsWith(search.toLowerCase()));
+    // const filteredData = data.filter(searchedLeave => searchedLeave.leaveInfo.staff.empNames.toLowerCase().startsWith(search.toLowerCase()));
     return (
         <>
             <div className="font-monospace mt-1" style={{ width: "100%" }}>
                 <div className="mx-1 mt-2">
                     {dataAvailable && <div className="d-flex justify-content-end">
-                        <div className="mx-2 mt-1 mb-2">
+                        <div className="mx-2 mt-2 mb-2">
                             <div className="input-group">
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text"><SearchOutlined /></span>
+                                    <span className="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
                                 </div>
                                 <input type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     className="form-control" placeholder="Search..." />
+                                <div className="input-group-append">
+                                    <button className="btn btn-primary" onClick={() => toggleSearchType()}>
+                                        <small>{searchType.name}</small>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>}
@@ -91,32 +101,32 @@ const TerminatedCasesView     = ({ leaveData }) => {
                             <thead>
                                 <tr className="table-primary">
                                     <th>NO.</th>
-                                    <th>Names</th>
-                                    <th>Department</th>
-                                    <th>Leave type</th>
-                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Driving license</th>
+                                    <th>car plate number</th>
+                                    <th>Location</th>
+                                    <th>Date of occurence</th>
+                                    <th>Case status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredData.map((leaveStatus, index) => {
-                                    return (
-                                        <tr key={index} onClick={()=>initiateShowLeaveDetails(leaveStatus)} style={{cursor:"pointer"}}>
-                                            <td>{index + 1}</td>
-                                            <td>{leaveStatus.leaveInfo.staff.empNames}</td>
-                                            <td>{leaveStatus.leaveInfo.staff.department}</td>
-                                            <td>{leaveStatus.actualLeave.leaveType}</td>
-                                            <td>
-                                                {leaveStatus.actualLeave.supervisorApproval.requestStatus === "APPROVED" ? (<span className="badge rounded-pill bg-success">Approved</span>)
-                                                    : (<span className="badge rounded-pill bg-danger">Rejected</span>)}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {data.map((caseData, index) => (
+                                    <tr key={index}>
+                                        {/* Add the necessary columns based on your data */}
+                                        <td>{index + 1}</td>
+                                        <td>{caseData.participants[0].driver.firstname} {caseData.participants[0].driver.lastname}</td>
+                                        <td>{caseData.participants[0].driver.drivingLicense}</td>
+                                        <td><p className="d-flex justify-content-center">{caseData.participants[0].vehicleInfo.plateNo}</p></td>
+                                        <td>{caseData.location.province}</td>
+                                        <td>{formatTextDateInput(caseData.createdAt)}</td>
+                                        <td><span className="badge rounded-pill bg-success">Completed review</span></td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table> : (<div>
                             <div className="d-flex justify-content-center mt-5">
                                 <div className="d-flex flex-column">
-                                    <WarningTwoTone style={{ fontSize: "7rem" }} />
+                                    <i class="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i>
                                     <p style={{ fontSize: '2rem' }} className="mt-3">No leave requests</p>
                                 </div>
                             </div>
@@ -136,4 +146,4 @@ const TerminatedCasesView     = ({ leaveData }) => {
     )
 }
 
-export default TerminatedCasesView ;
+export default TerminatedCasesView;

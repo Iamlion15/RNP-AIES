@@ -11,7 +11,7 @@ import ViewApplication from "./viewApplication";
 import MessageModal from "@/components/Modals/MessageModal";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ApproveItemModal from "@/components/Modals/ApproveItemModal";
+import ApproveItemModal from "@/components/Modals/ReviewSceneModal";
 
 const Feedback = () => {
     const [data, setData] = useState([])

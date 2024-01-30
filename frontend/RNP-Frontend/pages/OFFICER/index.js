@@ -4,8 +4,8 @@ import PoliceSideNav from "@/components/policeOfficerDashboard/policeSideNav";
 import Logout from "@/helpers/logout";
 import HeaderComponent from "@/components/Header/Header";
 import CaseScenario from "./caseScenario";
-import Messages from "./Messages";
 import AllCasesDashboard from "./allCasesView";
+import CompletedReviewAndAnswering from "./completeReviewedCases";
 
 
 
@@ -28,8 +28,8 @@ const Index = () => {
                         {page === "Review scene" && (
                             <CaseScenario  style={{ width: '100%' }}/>
                         )}
-                         {page === "Police officers" && (
-                            <PoliceOfficersView  style={{ width: '100%' }}/>
+                         {page === "Complete review" && (
+                            <CompletedReviewAndAnswering  style={{ width: '100%' }}/>
                         )}
                         {page === "CASES" && (
                             <AllCasesDashboard  style={{ width: '100%' }}/>

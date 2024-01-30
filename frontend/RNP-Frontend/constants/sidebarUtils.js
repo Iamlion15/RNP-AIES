@@ -13,22 +13,22 @@ const SidebarItems = {
             },
             {
                 title: "Add officer",
-                icon: <i class="bi bi-collection mx-2"></i>,
+                icon: <i className="bi bi-collection mx-2"></i>,
                 link: ""
             },
             {
                 title: "Police officers",
-                icon: <i class="bi bi-collection mx-2"></i>,
+                icon: <i className="bi bi-collection mx-2"></i>,
                 link: ""
             },
             {
                 title: "List of questions",
-                icon: <i class="bi bi-clipboard-x mx-2"></i>,
+                icon: <i className="bi bi-clipboard-x mx-2"></i>,
                 link: ""
             },
             {
                 title: "Questions",
-                icon: <i class="bi bi-question-circle mx-2"></i>,
+                icon: <i className="bi bi-question-circle mx-2"></i>,
                 link: ""
             },
         ]
@@ -41,17 +41,17 @@ const SidebarItems = {
             },
             {
                 title: "Review scene",
-                icon: <i class="bi bi-binoculars-fill mx-2"></i>,
+                icon: <i className="bi bi-binoculars-fill mx-2"></i>,
                 link: ""
             },
             {
-                title: "Feedback",
-                icon: <i class="bi bi-chat-left-fill mx-2"></i>,
+                title: "Complete review",
+                icon: <i className="bi bi-chat-left-fill mx-2"></i>,
                 link: ""
             },
             {
                 title: "CASES",
-                icon: <i class="bi bi-receipt-cutoff mx-2"></i>,
+                icon: <i className="bi bi-receipt-cutoff mx-2"></i>,
                 link: ""
             },
         ]
@@ -63,36 +63,22 @@ const SidebarItems = {
                 link: ""
             },
             {
-                title: "Review scene",
-                icon: <i class="bi bi-binoculars-fill mx-2"></i>,
+                title: "Pending cases",
+                icon: <i className="bi bi-circle-square mx-2"></i>,
                 link: ""
             },
             {
-                title: "Feedback",
-                icon: <i class="bi bi-chat-left-fill mx-2"></i>,
+                title: "Complete cases",
+                icon: <i class="bi bi-clipboard-check mx-2"></i>,
                 link: ""
             },
             {
-                title: "CASES",
-                icon: <i class="bi bi-receipt-cutoff mx-2"></i>,
+                title: "Police decisions",
+                icon: <i className="bi bi-back mx-2"></i>,
                 link: ""
             },
         ]
     }, 
-    RICA: {
-        items: [
-            {
-                ...defaultItem,
-                link: ""
-            },
-            {
-                title: "Review Applications",
-                icon: <i class="bi bi-binoculars-fill mx-2"></i>,
-                link: ""
-            },
-        ]
-    }
-
 }
 
 const getSidebarItems=(role)=>{

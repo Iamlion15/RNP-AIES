@@ -1,7 +1,7 @@
 const express=require("express")
-const {addUser,getUsers,loginUser,updateUser,checkPassword,updateUserPassword,updateOfficer,checkEmail,createCitizenPassword}=require("../controller/userController")
+const {addUser,getUsers,loginUser,updateUser,checkPassword,updateUserPassword,updateOfficer,checkEmail,createCitizenPassword,}=require("../controller/userController")
 const checkAuthentication=require("../middlewares/checkAuthentication")
-const {checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization}=require("../middlewares/checkAuthorization")
+const {checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization,checkCitizenuthorization}=require("../middlewares/checkAuthorization")
 
 const router=express.Router();
 
@@ -15,6 +15,7 @@ router.post("/activatepassword",createCitizenPassword)
 router.post("/save",checkAuthentication,checkPoliceAdminAuthorization,addUser)
 router.get("/getofficers",checkAuthentication,checkPoliceAdminAuthorization,getUsers)
 router.post("/updateofficer",checkAuthentication,checkPoliceAdminAuthorization,updateOfficer)
+
 
 
 

@@ -7,6 +7,12 @@ const caseSchema = new mongoose.Schema({
         sector: String,
         cell: String
     },
+    file:{
+        type:String,
+    },
+    OGPComment:{
+        type:String,
+    },
     ReportStatus:{
         type:String,
         default:"pending",
@@ -18,7 +24,7 @@ const caseSchema = new mongoose.Schema({
     caseStatus:{
         type:String,
         default:"PENDING",
-        enum:["PENDING","COMPLETE"]
+        enum:["PENDING","COMPLETE","REVIEWED"]
     },
     OPG: {
         type: mongoose.Schema.Types.ObjectId,
@@ -33,13 +39,25 @@ const caseSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "vehicle",
         },
-        answers: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Answer",
-        }],
+        answers: [mongoose.Schema.Types.Mixed],
         drunk: {
             type:Boolean
         },
+        caseReviewed:{
+            type:Boolean,
+            default:false
+        },
+        ReportStatus:{
+            type:String,
+            default:"pending",
+            enum:["answered","pending"]
+        },
+        caseStatus:{
+            type:String,
+            default:"PENDING",
+            enum:["PENDING","COMPLETE","REVIEWED"]
+        },
+        
     }],
 },{timestamps:true});
 

@@ -4,7 +4,8 @@ const vehicleSchema=new mongoose.Schema({
     
     plateNo:{
         type:String,
-        required:true 
+        required:true,
+        unique:true
     },
     insuranceProvider:{
         type:String,

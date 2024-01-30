@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const checkAuthentication = require("../middlewares/checkAuthentication")
 const uploadDocument = require("../middlewares/uploadDocument")
-const { checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization} = require("../middlewares/checkAuthorization")
+const { checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization,checkCitizenuthorization} = require("../middlewares/checkAuthorization")
 
 
-const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion} = require("../controller/caseController")
+const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion,getCasesByUser,getUserByEmail,answerToCases,policeReviewCase} = require("../controller/caseController")
 
 
 router.post("/startcase", checkAuthentication, checkPoliceOfficerAuthorization, startCase)
@@ -12,7 +12,12 @@ router.post('/addquestion',checkAuthentication,checkPoliceAdminAuthorization,add
 router.get('/get/questions',checkAuthentication,checkPoliceAdminAuthorization,ListOfQuestions)
 router.delete('/delete/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,deleteQuestion)
 router.post('/update/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,UpdateQuestion)
-router.post('/getcases',getCases)
+router.post('/getcases',checkAuthentication,checkCitizenuthorization,getCases)
+router.post('/police/getcases',checkAuthentication,checkPoliceOfficerAuthorization,getCases)
+router.get('/getcases/:userId',checkAuthentication,checkCitizenuthorization,getCasesByUser)
+router.post('/getuser',checkAuthentication,checkPoliceOfficerAuthorization,getUserByEmail)
+router.put('/answercase',checkAuthentication,checkCitizenuthorization,answerToCases)
+router.put('/police/review',checkAuthentication,checkPoliceOfficerAuthorization,uploadDocument,policeReviewCase)
 
 
 

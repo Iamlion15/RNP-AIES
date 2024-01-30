@@ -27,7 +27,7 @@ exports.checkPoliceOfficerAuthorization = (req, res, next) => {
 
 exports.checkCitizenuthorization = (req, res, next) => {
     try {
-        if (req.user.role === "RSB") {
+        if (req.user.role === "CITIZEN") {
             next()
         }
         else {

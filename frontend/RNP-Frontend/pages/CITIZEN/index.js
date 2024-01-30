@@ -5,6 +5,8 @@ import CitizenHeaderComponent from "@/components/citizenComponents/citizenHeader
 import Dashboard from "./dashboard";
 import Logout from "@/helpers/logout";
 import MyRequests from "./myRequests";
+import PendingCasesToAnswer from "./pendingCases";
+import CompleteCasesToAnswer from "./completeCases";
 
 const Index = () => {
     const [page, setPage] = useState("Dashboard")
@@ -27,11 +29,11 @@ const Index = () => {
                         {page === 'Review Requests' && (
                             <MyRequests />
                         )}
-                        {page === 'Feedback' && (
-                            <Feedback />
+                        {page === 'Pending cases' && (
+                            <PendingCasesToAnswer />
                         )}
-                        {page === 'Vendors' && (
-                            <Vendors />
+                        {page === 'Complete cases' && (
+                            <CompleteCasesToAnswer />
                         )}
                     </div>
                 </div>

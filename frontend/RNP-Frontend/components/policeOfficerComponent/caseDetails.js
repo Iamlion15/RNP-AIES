@@ -3,8 +3,9 @@ import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import UserDetailsModal from "../Modals/addUserDetailsModal";
 
-const CaseDetails = ({data,setData,setProceed}) => {
+const CaseDetails = ({ data, setData, setProceed }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [plateNo, setPlateNo] = useState()
     const [indexx, setIndexx] = useState('')
     const toggleModal = () => {
         setModalIsOpen(!modalIsOpen)

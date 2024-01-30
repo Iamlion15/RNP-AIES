@@ -3,6 +3,10 @@ const vehicleModel = require("../model/vehicleModel")
 const caseModel = require("../model/caseModel")
 const QuestionModel = require("../model/questionsModel")
 const answerModel = require("../model/answerModel")
+const { checkIfAllHasBeenAnswered } = require("../helpers/checkAnswers")
+const path = require("path")
+
+
 
 exports.startCase = async (req, res) => {
     const OPG = req.user._id;
@@ -12,28 +16,46 @@ exports.startCase = async (req, res) => {
         vehicle: ""
     }];
     try {
+        const questions = await QuestionModel.find();
+        let questionArray = [];
+        for (let a = 0; a < questions.length; a++) {
+            quest = { text: questions[a].text, answer: "" }
+            questionArray.push(quest)
+        }
         for (let i = 0; i < ParticipantData.length; i++) {
-
-            let driver = new userModel({
-                firstname: ParticipantData[i].owner.firstname,
-                lastname: ParticipantData[i].owner.lastname,
-                nID: ParticipantData[i].owner.nID,
-                email: ParticipantData[i].owner.email,
-                drivingLicense: ParticipantData[i].owner.drivingLicense,
-                role: "CITIZEN"
-            })
-            let vehicleDetail = new vehicleModel({
-                plateNo: ParticipantData[i].plateNo,
-                insuranceProvider: ParticipantData[i].insuranceProvider,
-                insuranceNumber: ParticipantData[i].insuranceNumber
-            })
-
-            console.log(vehicleDetail);
-            let participantId = await driver.save()
-            let vehicleId = await vehicleDetail.save();
+            const isUserPresent = await userModel.findOne({ email: ParticipantData[i].owner.email })
+            const isVehiclePresent = await vehicleModel.findOne({ plateNo: ParticipantData[i].plateNo })
+            let participantId
+            let vehicleId
+            if (!isUserPresent) {
+                let driver = new userModel({
+                    firstname: ParticipantData[i].owner.firstname,
+                    lastname: ParticipantData[i].owner.lastname,
+                    nID: ParticipantData[i].owner.nID,
+                    email: ParticipantData[i].owner.email,
+                    drivingLicense: ParticipantData[i].owner.drivingLicense,
+                    role: "CITIZEN"
+                })
+                participantId = await driver.save()
+            }
+            else {
+                participantId = isUserPresent._id
+            }
+            if (!isVehiclePresent) {
+                let vehicleDetail = new vehicleModel({
+                    plateNo: ParticipantData[i].plateNo,
+                    insuranceProvider: ParticipantData[i].insuranceProvider,
+                    insuranceNumber: ParticipantData[i].insuranceNumber
+                })
+                vehicleId = await vehicleDetail.save();
+            }
+            else {
+                vehicleId = await isVehiclePresent._id
+            }
             participants[i] = {
                 driver: participantId._id,
-                vehicleInfo: vehicleId._id
+                vehicleInfo: vehicleId._id,
+                answers: questionArray
             }
         }
 
@@ -54,6 +76,7 @@ exports.startCase = async (req, res) => {
     }
 
     catch (error) {
+        console.log(error);
         res.status(400).json({ "error": error.message })
     }
 }
@@ -115,7 +138,7 @@ exports.getCases = async (req, res) => {
                 populate: { path: "driver vehicleInfo" }
             });
         if (data.length > 0) {
-            res.status(200).json({ cases:data, dataPresent: true })
+            res.status(200).json({ cases: data, dataPresent: true })
         }
         else {
             res.status(200).json({ "message": "There is no data found", dataPresent: false })
@@ -124,3 +147,102 @@ exports.getCases = async (req, res) => {
         res.status(400).json({ "message": err });
     }
 };
+
+exports.answerToCases = async (req, res) => {
+    try {
+        let participantIndex;
+        const findCase = await caseModel.findOne({ _id: req.body.case.caseid })
+        for (let i = 0; i < findCase.participants.length; i++) {
+            if (findCase.participants[i]._id.toString() === req.body.case.participantId) {
+                for (let a = 0; a < findCase.participants[i].answers.length; a++) {
+                    participantIndex=i;
+                    if (findCase.participants[i].answers[a].text === req.body.answers.text) {
+                        findCase.participants[i].answers[a].answer = req.body.answers.answer
+                    }
+                }
+            }
+        }
+        const check = checkIfAllHasBeenAnswered(findCase, req.body.case.participantId)
+        if (check) {
+            //findCase.ReportStatus = "answered"
+            findCase.participants[participantIndex].ReportStatus="answered"
+        }
+        
+        await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
+        return res.status(200).json({ "message": "successfully updated" })
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({ "message": err.message });
+    }
+};
+exports.policeReviewCase=async(req,res)=>{
+    try {
+        console.log(req.body);
+        let fileLocation;
+    if (req.file) {
+        fileLocation = path.resolve(req.file.path)
+    } else {
+        return res.status(400).json({ error: 'No file was uploaded' });
+    }
+   // console.log(fileLocation);
+        const findCase=await caseModel.findOne({ _id: req.body.caseid })
+        findCase.file=fileLocation;
+        findCase.OGPComment=req.body.policeOfficerComment
+        findCase.caseStatus="REVIEWED"
+        await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
+        return res.status(200).json({ "message": "successfully updated" })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ "message": error.message });
+    }
+}
+
+exports.getCasesByUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        const data = await caseModel.find({
+            "participants": { $elemMatch: { $or: [{ driver: userId }] } }
+        }).populate({
+            path: "participants",
+            populate: { path: "driver vehicleInfo" }
+        }).populate("OPG");
+
+        if (data.length > 0) {
+            res.status(200).json({ cases: data, dataPresent: true });
+        } else {
+            res.status(200).json({ "message": "There is no data found", dataPresent: false });
+        }
+    } catch (err) {
+        res.status(400).json({ "message": err.message });
+    }
+};
+
+exports.getUserByEmail = async (req, res) => {
+    try {
+        const data = await userModel.findOne({ email: req.body.email })
+
+        if (data) {
+            res.status(200).json({ found: data, dataPresent: true });
+        } else {
+            res.status(200).json({ "message": "There is no data found", dataPresent: false });
+        }
+    } catch (err) {
+        res.status(400).json({ "message": err.message });
+    }
+};
+
+exports.getCarByPlate = async (req, res) => {
+    try {
+        const data = await vehicleModel.findOne({ plateNo: req.body.plateNo })
+
+        if (data) {
+            res.status(200).json({ found: data, dataPresent: true });
+        } else {
+            res.status(200).json({ "message": "There is no data found", dataPresent: false });
+        }
+    } catch (err) {
+        res.status(400).json({ "message": err.message });
+    }
+};
+

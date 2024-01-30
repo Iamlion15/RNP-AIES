@@ -9,16 +9,15 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 // import ChooseSearchType from "./chooseSearchTypeModal";
 import 'react-toastify/dist/ReactToastify.css';
-// import TerminatedCasesView from "./terminatedCaseView";
+import TerminatedCasesView from "./terminatedCaseView";
 
 import { formatTextDateInput } from "../../helpers/dateHelper";
+import ReviewCaseModal from "@/components/Modals/ReviewSceneModal";
 
 
 
 const AllCasesDashboard = () => {
     const [data, setData] = useState([])
-    const [leaveData, setLeaveData] = useState([])
-    const [currentStaff, setCurrentStaff] = useState();
     const [search, setSearch] = useState("")
     const [showSearchType, setShowSearchType] = useState(false)
     const [searchType, setSearchType] = useState({
@@ -28,27 +27,10 @@ const AllCasesDashboard = () => {
     })
     const [dataPresent, setDataPresent] = useState(false)
     const [activeTab, setActiveTab] = useState("Pending");
-    const [showApproveRequestModal, setShowApproveRequestModal] = useState(false)
+    const [showReviewCaseModal, setShowReviewCaseModal] = useState(false)
     const [showLeaveDetails, setShowLeaveDetails] = useState(false)
-    const [approveData, setApproveData] = useState({
-        leaveId: "",
-        actualLeaveId: "",
-        leaveType: "",
-        startDate: "",
-        endDate: "",
-        returnDate: "",
-        daysTaken: "",
-        status: "",
-        actingPerson: {
-            names: "",
-            empCode: ""
-        },
-        staff: {
-            names: "",
-            empCode: ""
-        },
-        comment: ""
-    })
+    const [caseid, setCaseid] = useState()
+    const [reviewData, setReviewData] = useState([])
     const [leaveDetails, setLeaveDetails] = useState({
         leaveType: "",
         startDate: "",
@@ -67,8 +49,12 @@ const AllCasesDashboard = () => {
     const toggleSearchType = () => {
         setShowSearchType(!showSearchType)
     }
-    const toggleShowLeaveDetails = () => {
-        setShowLeaveDetails(!showLeaveDetails)
+    const toggleReviewCaseModal = () => {
+        setShowReviewCaseModal(!showReviewCaseModal)
+    }
+    const initiateReviewCase = (casedata) => {
+        setCaseid(casedata._id)
+        setShowReviewCaseModal(true)
     }
     const initiateShowLeaveDetails = (leave) => {
         setLeaveDetails({
@@ -120,9 +106,10 @@ const AllCasesDashboard = () => {
                 OPG: user_id
             }
             console.log(user_id);
-            const response = await axios.post("http://localhost:8000/api/case/getcases", requestParams, config);
+            const response = await axios.post("http://localhost:8000/api/case/police/getcases", requestParams, config);
             const pendingData = [];
             let count = 0
+            setReviewData(response.data.cases)
             if (response.data.dataPresent) {
                 for (let i = 0; i < response.data.cases.length; i++) {
                     const pendingCases = response.data.cases[i]
@@ -170,7 +157,7 @@ const AllCasesDashboard = () => {
 
     useEffect(() => {
         fetchData()
-    }, [showApproveRequestModal, showLeaveDetails])
+    }, [showReviewCaseModal, showLeaveDetails])
 
     // const filteredData = data.filter(searchedLeave => {
     //     let nestedValue;
@@ -260,18 +247,20 @@ const AllCasesDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                        {data.map((caseData, index) => (
-                                            caseData.participants.map((scenario, participantIndex) => (
-                                                <tr key={`${index}-${participantIndex}`}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{scenario.driver.firstname} {scenario.driver.lastname}</td>
-                                                    <td>{scenario.driver.drivingLicense}</td>
-                                                    <td ><p className="d-flex justify-content-center">{scenario.vehicleInfo.plateNo}</p></td>
-                                                    <td>{scenario.drunk ? 'Yes' : 'No'}</td>
-                                                    <td>{caseData.location.province}</td>
-                                                    <td>{formatTextDateInput(caseData.createdAt)}</td>
-                                                    <td><span className="badge rounded-pill bg-warning">Pending</span></td>
-                                                    <td className="">
+                                    {data.map((caseData, index) => {
+                                        let renderedRowCount = 0;
+                                        return caseData.participants.map((participant, participantIndex) => (
+                                            participant.ReportStatus === "pending" &&
+                                            (<tr key={`${index}-${participantIndex}`}>
+                                                <td>{renderedRowCount + 1}</td>
+                                                <td>{participant.driver.firstname} {participant.driver.lastname}</td>
+                                                <td>{participant.driver.drivingLicense}</td>
+                                                <td><p className="d-flex justify-content-center">{participant.vehicleInfo.plateNo}</p></td>
+                                                <td>{participant.drunk ? 'Yes' : 'No'}</td>
+                                                <td>{caseData.location.province}</td>
+                                                <td>{formatTextDateInput(caseData.createdAt)}</td>
+                                                <td><span className="badge rounded-pill bg-warning">Pending</span></td>
+                                                <td className="">
                                                     <UncontrolledDropdown>
                                                         <DropdownToggle
                                                             role="button"
@@ -281,29 +270,31 @@ const AllCasesDashboard = () => {
                                                         >
                                                             <i class="bi bi-three-dots-vertical"></i>
                                                         </DropdownToggle>
-                                                        <DropdownMenu className="dropdown-menu-arrow" right>
+                                                        <DropdownMenu className="dropdown-menu-arrow" end>
                                                             <DropdownItem
-                                                                onClick={() => showModifyData(question)}
+                                                                onClick={() => initiateReviewCase(caseData)}
                                                             >
                                                                 <div className='d-flex flex-row'>
-                                                                    <i className="bi bi-box-seam" style={{fontWeight:"bold"}}></i>
-                                                                    <strong><p className='mx-3 my-0 py-0 text-muted'>Update</p></strong>
+                                                                    <i className="bi bi-box-seam" style={{ fontWeight: "bold" }}></i>
+                                                                    <strong><p className='mx-3 my-0 py-0 text-muted'>Review</p></strong>
                                                                 </div>
                                                             </DropdownItem>
                                                             <DropdownItem
                                                                 onClick={() => showDeleteData(question._id)}
                                                             >
                                                                 <div className='d-flex flex-row'>
-                                                                <i className="bi bi-trash" style={{fontWeight:"bold"}}></i>
+                                                                    <i className="bi bi-trash" style={{ fontWeight: "bold" }}></i>
                                                                     <strong><p className='mx-3 my-0 py-0 text-muted'>Delete</p></strong>
                                                                 </div>
                                                             </DropdownItem>
+
                                                         </DropdownMenu>
                                                     </UncontrolledDropdown>
                                                 </td>
-                                                </tr>
-                                            ))
-                                        ))}
+                                            </tr>)
+                                        ))
+                                    })}
+
                                 </tbody>
                             </table> : (<div>
                                 <div className="d-flex justify-content-center mt-5">
@@ -315,20 +306,16 @@ const AllCasesDashboard = () => {
                             </div>)
                             }
                         </div>
-                    </div> : <AllCasesDashboard />}
-                </div>
-                {/* <div>
-                    {showApproveRequestModal && <HRManagerReviewRequest
-                        modalIsOpen={showApproveRequestModal}
-                        toggleModal={toggleApproveModal}
-                        data={approveData}
-                        token={token}
-                        setData={setApproveData}
-                        handleReview={handleReview}
-
-                    />}
+                    </div> : <TerminatedCasesView reviewedData={reviewData} />}
                 </div>
                 <div>
+                    {showReviewCaseModal && <ReviewCaseModal
+                        modalIsOpen={showReviewCaseModal}
+                        toggleModal={toggleReviewCaseModal}
+                        caseid={caseid}
+                    />}
+                </div>
+                {/* <div>
                     {showLeaveDetails && <ActualLeaveRequestDetails
                         modalIsOpen={showLeaveDetails}
                         toggleModal={toggleShowLeaveDetails}

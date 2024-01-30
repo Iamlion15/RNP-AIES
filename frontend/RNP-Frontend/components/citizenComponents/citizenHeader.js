@@ -83,9 +83,9 @@ const CitizenHeaderComponent = ({ page, logout }) => {
                                 caret
                                 color='default'
                             />
-                            <DropdownMenu className='shadow rounded-3 bg-dark'>
+                            <DropdownMenu className='shadow rounded-3'>
                                 <DropdownItem onClick={toggleModal}>
-                                    <div className='d-flex flex-row text-white'>
+                                    <div className='d-flex flex-row'>
                                         <div className='d-flex align-items-center'>
                                             <i class="bi bi-info-circle mx-2" style={{ fontSize: '1.7em' }}></i>
                                         </div>
