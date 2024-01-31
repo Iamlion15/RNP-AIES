@@ -4,7 +4,7 @@ const uploadDocument = require("../middlewares/uploadDocument")
 const { checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization,checkCitizenuthorization} = require("../middlewares/checkAuthorization")
 
 
-const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion,getCasesByUser,getUserByEmail,answerToCases,policeReviewCase} = require("../controller/caseController")
+const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion,getCasesByUser,getUserByEmail,answerToCases,policeReviewCase,completeCase} = require("../controller/caseController")
 
 
 router.post("/startcase", checkAuthentication, checkPoliceOfficerAuthorization, startCase)
@@ -18,6 +18,7 @@ router.get('/getcases/:userId',checkAuthentication,checkCitizenuthorization,getC
 router.post('/getuser',checkAuthentication,checkPoliceOfficerAuthorization,getUserByEmail)
 router.put('/answercase',checkAuthentication,checkCitizenuthorization,answerToCases)
 router.put('/police/review',checkAuthentication,checkPoliceOfficerAuthorization,uploadDocument,policeReviewCase)
+router.put('/completecase',checkAuthentication,checkPoliceOfficerAuthorization,completeCase)
 
 
 

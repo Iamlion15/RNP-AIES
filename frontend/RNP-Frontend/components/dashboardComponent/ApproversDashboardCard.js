@@ -1,8 +1,8 @@
 const DashboardCard = ({color,message,icon,number}) => {
     return (
         <>
-            <div className="col-6">
-                <div className="card rounded-3 shadow-sm">
+            <div className="col-4">
+                <div className="card rounded-3">
                     <div className="d-flex flex-row">
                     <div className={`card rounded-3 shadow ${color}`} style={{ height: "50px",marginRight:'20px',marginLeft:'5px', marginBottom:"40px" }}>
                             <div className="d-flex justify-content-center align-items-center" style={{ height: "100%" }}>

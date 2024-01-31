@@ -6,6 +6,8 @@ import HeaderComponent from "@/components/Header/Header";
 import CaseScenario from "./caseScenario";
 import AllCasesDashboard from "./allCasesView";
 import CompletedReviewAndAnswering from "./completeReviewedCases";
+import FinalReportView from "./finalReport";
+import CasesHistoryview from "./CaseHistory";
 
 
 
@@ -33,6 +35,12 @@ const Index = () => {
                         )}
                         {page === "CASES" && (
                             <AllCasesDashboard  style={{ width: '100%' }}/>
+                        )}
+                         {page === "FINAL REPORT" && (
+                            <FinalReportView  style={{ width: '100%' }}/>
+                        )}
+                         {page === "CASE HISTORY" && (
+                            <CasesHistoryview  style={{ width: '100%' }}/>
                         )}
                     </div>
                 </div>

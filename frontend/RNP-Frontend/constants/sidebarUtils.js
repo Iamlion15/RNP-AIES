@@ -41,17 +41,27 @@ const SidebarItems = {
             },
             {
                 title: "Review scene",
-                icon: <i className="bi bi-binoculars-fill mx-2"></i>,
+                icon: <i className="bi bi-clipboard2 mx-2"></i>,
                 link: ""
             },
             {
                 title: "Complete review",
-                icon: <i className="bi bi-chat-left-fill mx-2"></i>,
+                icon: <i className="bi bi-card-heading mx-2"></i>,
                 link: ""
             },
             {
                 title: "CASES",
-                icon: <i className="bi bi-receipt-cutoff mx-2"></i>,
+                icon: <i className="bi bi-calendar-check mx-2"></i>,
+                link: ""
+            },
+            {
+                title: "FINAL REPORT",
+                icon: <i className="bi bi-back mx-2"></i>,
+                link: ""
+            },
+            {
+                title: "CASE HISTORY",
+                icon: <i className="bi bi-copy mx-2"></i>,
                 link: ""
             },
         ]

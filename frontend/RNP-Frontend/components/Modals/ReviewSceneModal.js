@@ -9,18 +9,35 @@ import { formatDate } from "@/helpers/ReportDateHelper";
 const ReviewCaseModal = ({ modalIsOpen, toggleModal, caseid }) => {
     const [reviewScene, setReviewScene] = useState({
         file: "",
+        insuranceFile: "",
         policeOfficerComment: ""
     })
     const [activateComment, setActivateComment] = useState(false)
+    const [activateInsuranceDocument, setActivateInsuranceDocument] = useState(false)
     const [activateConfirm, setActivateConfirm] = useState(false)
-    const handleInput = (e) => {
-        const input = e.target.files[0]
-        setReviewScene({ ...reviewScene, file: input })
-        if (input) {
-            setActivateComment(true)
+
+    const handleInput = (e, field) => {
+        if (field === "scene document") {
+            const input = e.target.files[0]
+            setReviewScene({ ...reviewScene, insuranceFile: input })
+            if (input) {
+                setActivateInsuranceDocument(true)
+            }
+            else {
+                setActivateInsuranceDocument(false)
+            }
         }
         else {
-            setActivateComment(false)
+            if (field === "insurance document") {
+                const input = e.target.files[0]
+                setReviewScene({ ...reviewScene, file: input })
+                if (input) {
+                    setActivateComment(true)
+                }
+                else {
+                    setActivateComment(false)
+                }
+            }
         }
     }
     useEffect(() => {
@@ -41,7 +58,8 @@ const ReviewCaseModal = ({ modalIsOpen, toggleModal, caseid }) => {
         };
         const formdata = new FormData();
         formdata.append('caseid', caseid)
-        formdata.append('file', reviewScene.file);
+        formdata.append('files', reviewScene.file);
+        formdata.append('files', reviewScene.insuranceFile);
         formdata.append('policeOfficerComment', reviewScene.policeOfficerComment);
         try {
             const response = await axios.put("http://localhost:8000/api/case/police/review", formdata, config);
@@ -69,9 +87,18 @@ const ReviewCaseModal = ({ modalIsOpen, toggleModal, caseid }) => {
                     <div className="m-3">
                         <span className="mb-2">Upload document of the scene </span>
                         <div className="input-group">
-                            <input type="file" className="form-control" id="upload" onChange={(e) => handleInput(e)} />
+                            <input type="file" className="form-control" id="upload" onChange={(e) => handleInput(e,"scene document")} />
                             <label className="input-group-text" htmlFor="upload">Upload</label>
                         </div>
+                        {activateInsuranceDocument &&
+                            <div className="mt-3">
+                                <span className="mb-2">Upload police decision document to insurance </span>
+                                <div className="input-group">
+                                    <input type="file" className="form-control" id="upload" onChange={(e) => handleInput(e,"insurance document")} />
+                                    <label className="input-group-text" htmlFor="upload">Upload</label>
+                                </div>
+                            </div>
+                        }
                         {activateComment && <div>
                             <div className="form-floating mt-3">
                                 <textarea

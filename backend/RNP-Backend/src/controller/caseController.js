@@ -3,7 +3,8 @@ const vehicleModel = require("../model/vehicleModel")
 const caseModel = require("../model/caseModel")
 const QuestionModel = require("../model/questionsModel")
 const answerModel = require("../model/answerModel")
-const { checkIfAllHasBeenAnswered } = require("../helpers/checkAnswers")
+const { checkIfAllHasBeenAnswered, checkIfAllParticipantHaveBeenReviewed } = require("../helpers/checkAnswers")
+const sendEMail=require("../helpers/caseEmailToParticipants")
 const path = require("path")
 
 
@@ -155,7 +156,7 @@ exports.answerToCases = async (req, res) => {
         for (let i = 0; i < findCase.participants.length; i++) {
             if (findCase.participants[i]._id.toString() === req.body.case.participantId) {
                 for (let a = 0; a < findCase.participants[i].answers.length; a++) {
-                    participantIndex=i;
+                    participantIndex = i;
                     if (findCase.participants[i].answers[a].text === req.body.answers.text) {
                         findCase.participants[i].answers[a].answer = req.body.answers.answer
                     }
@@ -165,9 +166,9 @@ exports.answerToCases = async (req, res) => {
         const check = checkIfAllHasBeenAnswered(findCase, req.body.case.participantId)
         if (check) {
             //findCase.ReportStatus = "answered"
-            findCase.participants[participantIndex].ReportStatus="answered"
+            findCase.participants[participantIndex].ReportStatus = "answered"
         }
-        
+
         await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
         return res.status(200).json({ "message": "successfully updated" })
     } catch (err) {
@@ -175,20 +176,53 @@ exports.answerToCases = async (req, res) => {
         return res.status(400).json({ "message": err.message });
     }
 };
-exports.policeReviewCase=async(req,res)=>{
+exports.policeReviewCase = async (req, res) => {
     try {
-        console.log(req.body);
+        const completedOn=new Date()
         let fileLocation;
-    if (req.file) {
-        fileLocation = path.resolve(req.file.path)
-    } else {
-        return res.status(400).json({ error: 'No file was uploaded' });
+        let insuranceFileLocation;
+        if (req.files[0]&&req.files[1]) {
+            fileLocation = path.resolve(req.files[0].path)
+            insuranceFileLocation=path.resolve(req.files[1].path)
+        } else {
+            return res.status(400).json({ error: 'No file was uploaded' });
+        }
+        const findCase = await caseModel.findOne({ _id: req.body.caseid }).populate({path: "participants",populate: { path: "driver vehicleInfo" }})
+        for (let i = 0; i < findCase.participants.length; i++) {
+           const participant=findCase.participants[i];
+           const names=participant.driver.firstname+" "+participant.driver.lastname
+           const email=participant.driver.email;
+           sendEMail(email,names,insuranceFileLocation)
+        }
+        findCase.file = fileLocation;
+        findCase.completedCaseOn=completedOn;
+        findCase.insuranceDocuments=insuranceFileLocation
+        findCase.OGPComment = req.body.policeOfficerComment
+        findCase.caseStatus = "COMPLETE"
+        await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
+        return res.status(200).json({ "message": "successfully updated" })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ "message": error.message });
     }
-   // console.log(fileLocation);
-        const findCase=await caseModel.findOne({ _id: req.body.caseid })
-        findCase.file=fileLocation;
-        findCase.OGPComment=req.body.policeOfficerComment
-        findCase.caseStatus="REVIEWED"
+}
+exports.completeCase = async (req, res) => {
+    try {
+        let participantIndex;
+        const findCase = await caseModel.findOne({ _id: req.body.caseid })
+        for (let i = 0; i < findCase.participants.length; i++) {
+            if (findCase.participants[i]._id.toString() === req.body.participantid) {
+                participantIndex = i;
+                break;
+            }
+        }
+        findCase.participants[participantIndex].conclusion = req.body.conclusion.cause;
+        findCase.participants[participantIndex].shortStatement = req.body.conclusion.shortStatement;
+        findCase.participants[participantIndex].caseStatus = "COMPLETE";
+        const check = checkIfAllParticipantHaveBeenReviewed(findCase)
+        if (check) {
+            findCase.ParticipantReportStatus = "all-answered"
+        }
         await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
         return res.status(200).json({ "message": "successfully updated" })
     } catch (error) {

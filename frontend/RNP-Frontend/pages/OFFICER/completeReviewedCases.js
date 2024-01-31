@@ -7,13 +7,14 @@ import DetailedInformation from "./DetailedInformation";
 
 const CompletedReviewAndAnswering = ({ token }) => {
     const [data, setData] = useState([])
+    const [renderedRowCount, setRenderedRowCount] = useState(0);
     const [dataPresent, setDataPresent] = useState(false)
     const [search, setSearch] = useState("")
     const [showDetails, setShowDetails] = useState(false)
     const [detaildata, setDetailData] = useState()
-    const [caseDetails,setCaseDetails]=useState({
-        caseid:"",
-        createdAt:""
+    const [caseDetails, setCaseDetails] = useState({
+        caseid: "",
+        createdAt: ""
     })
     const [searchType, setSearchType] = useState({
         name: "Staff name",
@@ -49,7 +50,24 @@ const CompletedReviewAndAnswering = ({ token }) => {
                 console.log(dataStatus);
                 if (count > 0) {
                     setData(dataStatus);
-                    setDataPresent(true)
+                    let innerCounter = 0
+                    let howManyParticipants = 0;
+                    for (let i = 0; i < dataStatus.length; i++) {
+                        console.log("participant", dataStatus[i].participants.length);
+                        for (let a = 0; a < dataStatus[i].participants.length; a++) {
+                            let howManyParticipants = howManyParticipants + dataStatus[i].participants.length;
+                            const participant = dataStatus[i].participants[a];
+                            if (participant.ReportStatus === "answered" && participant.caseStatus === "PENDING") {
+                                innerCounter++
+                            }
+                        }
+                    }
+                    if (innerCounter === howManyParticipants) {
+                        setDataPresent(false)
+                    }
+                    else {
+                        setDataPresent(true)
+                    }
                 }
                 else {
                     setDataPresent(false)
@@ -61,15 +79,18 @@ const CompletedReviewAndAnswering = ({ token }) => {
     };
     useEffect(() => {
         fetchData()
-    }, [])
-    const initiateDetails = (participant,casedata) => {
+    }, [showDetails])
+    const toggleShowDetails = () => {
+        setShowDetails(!showDetails)
+    }
+    const initiateDetails = (participant, casedata) => {
         console.log(casedata);
         setCaseDetails({
-            caseid:casedata._id,
-            createdAt:casedata.createdAt
+            caseid: casedata._id,
+            createdAt: casedata.createdAt
         })
-       setDetailData(participant)
-       setShowDetails(true)
+        setDetailData(participant)
+        setShowDetails(true)
     }
 
     //const filteredData = data.filter(searchedLeave => searchedLeave.leaveType.toLowerCase().startsWith(search.toLowerCase()));
@@ -121,12 +142,12 @@ const CompletedReviewAndAnswering = ({ token }) => {
                                     {data.map((caseData, index) => {
                                         let renderedRowCount = 0;
                                         return caseData.participants.map((participant, participantIndex) => (
-                                            participant.ReportStatus === "answered" &&
+                                            participant.ReportStatus==="answered"&& participant.caseStatus==="PENDING"&&
                                             (<tr key={`${index}-${participantIndex}`} style={{cursor:"pointer"}} onClick={()=>initiateDetails(participant,caseData)}>
-                                                <td>{renderedRowCount + 1}</td>
-                                                <td>{caseData.participants[0].driver.firstname} {caseData.participants[0].driver.lastname}</td>
-                                                <td>{caseData.participants[0].driver.drivingLicense}</td>
-                                                <td><p className="d-flex justify-content-center">{caseData.participants[0].vehicleInfo.plateNo}</p></td>
+                                                <td>{++renderedRowCount}</td>
+                                                <td>{participant.driver.firstname} {participant.driver.lastname}</td>
+                                                <td>{participant.driver.drivingLicense}</td>
+                                                <td><p className="d-flex justify-content-center">{participant.vehicleInfo.plateNo}</p></td>
                                                 <td>{caseData.location.province}</td>
                                                 <td>{formatTextDateInput(caseData.createdAt)}</td>
                                             </tr>)
@@ -136,14 +157,14 @@ const CompletedReviewAndAnswering = ({ token }) => {
                             </table> : (<div>
                                 <div className="d-flex justify-content-center mt-5">
                                     <div className="d-flex flex-column">
-                                        <i class="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i>
+                                        <div className="d-flex justify-content-center"> <i class="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i></div>
                                         <p style={{ fontSize: '2rem' }} className="mt-3">No complete case found</p>
                                     </div>
                                 </div>
                             </div>)
                             }
                         </div>
-                    </div> : <DetailedInformation data={detaildata} caseDetails={caseDetails} />}
+                    </div> : <DetailedInformation data={detaildata} caseDetails={caseDetails} toggleShowDetails={toggleShowDetails} />}
                 </div>
                 <div>
                     <ToastContainer />

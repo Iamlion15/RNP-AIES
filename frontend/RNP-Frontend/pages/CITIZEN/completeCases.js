@@ -3,15 +3,16 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { formatTextDateInput } from "../../helpers/dateHelper";
+import AnsweredQuestionView from "@/components/Modals/answeredQuestions";
 
-const CompleteCasesToAnswer = ({ token }) => {
+const CompleteCasesToAnswer = () => {
     const [data, setData] = useState([])
     const [dataPresent, setDataPresent] = useState(false)
     const [search, setSearch] = useState("")
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [answering, setAnswering] = useState(false)
-    const toggleDeleteModal = () => {
-        setShowDeleteModal(!showDeleteModal)
+    const [showAnswersModal, setShowAnswersModal] = useState(false);
+    const [participantDetails,setParticipantDetail]=useState()
+    const toggleShowAnswers = () => {
+        setShowAnswersModal(!showAnswersModal)
     }
     const fetchData = async () => {
         const config = {
@@ -31,8 +32,8 @@ const CompleteCasesToAnswer = ({ token }) => {
                     const pendingCases = response.data.cases[i]
                     for (let a = 0; a < pendingCases.participants.length; a++) {
                         if (pendingCases.participants[a].driver._id === user_id ) {
+                            setParticipantDetail(pendingCases.participants[a].answers)
                             if (pendingCases.participants[a].ReportStatus === "answered") {
-                                console.log("hello world");
                                 count++
                                 pendingData.push(pendingCases)
                             }
@@ -102,7 +103,7 @@ return (
                             <tbody style={{ cursor: "pointer" }}>
                                 {data.map((caseData, index) => {
                                     return (
-                                        <tr key={caseData._id} onClick={() => handleAnswers(caseData)}>
+                                        <tr key={caseData._id} onClick={() => toggleShowAnswers()}>
                                             <td>{index + 1}</td>
                                             <td>{caseData.location.province},{caseData.location.district}</td>
                                             <td>{caseData.OPG.firstname} {caseData.OPG.lastname}</td>
@@ -129,6 +130,13 @@ return (
             <div>
                 <ToastContainer />
             </div>
+            <div>
+                    {showAnswersModal && <AnsweredQuestionView
+                        toggleModal={toggleShowAnswers}
+                        modalIsOpen={showAnswersModal}
+                        questions={participantDetails}
+                    />}
+                </div>
         </div>
 
     </>

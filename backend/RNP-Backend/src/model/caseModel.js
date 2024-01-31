@@ -7,24 +7,30 @@ const caseSchema = new mongoose.Schema({
         sector: String,
         cell: String
     },
-    file:{
-        type:String,
+    file: {
+        type: String,
     },
-    OGPComment:{
-        type:String,
+    insuranceDocuments: {
+        type: String,
     },
-    ReportStatus:{
-        type:String,
-        default:"pending",
-        enum:["answered","pending","under-review","completed"]
+    completedCaseOn: {
+        type: Date,
     },
-    sceneReport:{
-        type:String,
+    OGPComment: {
+        type: String,
     },
-    caseStatus:{
-        type:String,
-        default:"PENDING",
-        enum:["PENDING","COMPLETE","REVIEWED"]
+    ParticipantReportStatus: {
+        type: String,
+        default: "pending",
+        enum: ["all-answered", "pending"]
+    },
+    sceneReport: {
+        type: String,
+    },
+    caseStatus: {
+        type: String,
+        default: "PENDING",
+        enum: ["PENDING", "COMPLETE"]
     },
     OPG: {
         type: mongoose.Schema.Types.ObjectId,
@@ -41,25 +47,31 @@ const caseSchema = new mongoose.Schema({
         },
         answers: [mongoose.Schema.Types.Mixed],
         drunk: {
-            type:Boolean
+            type: Boolean
         },
-        caseReviewed:{
-            type:Boolean,
-            default:false
+        caseReviewed: {
+            type: Boolean,
+            default: false
         },
-        ReportStatus:{
-            type:String,
-            default:"pending",
-            enum:["answered","pending"]
+        ReportStatus: {
+            type: String,
+            default: "pending",
+            enum: ["answered", "pending"]
         },
-        caseStatus:{
-            type:String,
-            default:"PENDING",
-            enum:["PENDING","COMPLETE","REVIEWED"]
+        caseStatus: {
+            type: String,
+            default: "PENDING",
+            enum: ["PENDING", "COMPLETE"]
         },
-        
+        conclusion: {
+            type: String
+        },
+        shortStatement: {
+            type: String
+        }
+
     }],
-},{timestamps:true});
+}, { timestamps: true });
 
 const caseModel = mongoose.model("case", caseSchema);
 

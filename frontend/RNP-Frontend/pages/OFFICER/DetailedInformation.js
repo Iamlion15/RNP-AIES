@@ -1,23 +1,60 @@
 import { useState } from "react";
 import { formatTextDateInput } from "@/helpers/dateHelper";
+import AnsweredQuestionView from "@/components/Modals/answeredQuestions";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
-const DetailedInformation = ({ data,caseDetails }) => {
-const [moreInformation,setMoreInformation]=useState();
+const DetailedInformation = ({ data, caseDetails, toggleShowDetails }) => {
+    const [moreInformation, setMoreInformation] = useState({
+        cause: "",
+        shortStatement: ""
+    });
+    const [showAnswersModal, setShowAnswersModal] = useState(false);
+    const toggleShowAnswers = () => {
+        setShowAnswersModal(!showAnswersModal)
+    }
+    const handleCompleteCase = async (e) => {
+        e.preventDefault()
+        const config = {
+            headers: {
+                'Content-Type': "application/json",
+                'Authorization': JSON.parse(localStorage.getItem("token"))
+            }
+        };
+        const requestParams = {
+            conclusion: moreInformation,
+            caseid: caseDetails.caseid,
+            participantid: data._id
+        }
+        try {
+            const response = await axios.put("http://localhost:8000/api/case/completecase", requestParams, config);
+            toast.success("successfully answered to the question data!", {
+                position: toast.POSITION.TOP_LEFT, autoClose: 5000
+            });
+            toggleShowDetails()
+        } catch (error) {
+            console.log(error);
+            toast.error("Failure!", {
+                position: toast.POSITION.TOP_LEFT, autoClose: 5000
+            });
+        }
+    }
     return (
         <>
             <div>
-                <table className="table mt-3">
-                    <thead>
+                <table className="table mt-0">
+                    {/* <thead>
                         <tr className="table-primary">
                             <th>DETAILED INFORMATION OF THE case</th>
                         </tr>
-                    </thead>
+                    </thead> */}
                 </table>
                 <table className="table table-borderless font-monospace">
                     <tbody>
                         <tr>
                             <td>Participant names :</td>
-                            <td>{data.driver.firstname} {data.driver.firstname}</td>
+                            <td>{data.driver.firstname} {data.driver.lastname}</td>
                         </tr>
                         <tr>
                             <td>Car plate number:</td>
@@ -36,10 +73,15 @@ const [moreInformation,setMoreInformation]=useState();
                             <td>{formatTextDateInput(caseDetails.createdAt)}</td>
                         </tr>
                         <tr>
+                            <td>Answered questions:</td>
+                            <td><button className="btn btn-primary btn-sm" onClick={() => toggleShowAnswers()}>View answers to questions</button> </td>
+                        </tr>
+                        <tr>
                             <td>Whats the primarily cause of this accident :</td>
                             <td>
                                 <div className="form-group">
-                                    <select className="form-select" value={moreInformation}>
+                                    <select className="form-select" value={moreInformation.cause} onChange={(e) => setMoreInformation({ ...moreInformation, cause: e.target.value })}>
+                                        <option >Choose</option>
                                         <option value="drunkdness">Drunk</option>
                                         <option value="overspeeding">Overspeeding</option>
                                         <option value="car mantanaince issue">Car maintanaince problem</option>
@@ -48,8 +90,39 @@ const [moreInformation,setMoreInformation]=useState();
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Officer statement:</td>
+                            <td>
+                                <div className="form-floating mt-3">
+                                    <textarea
+                                        className="form-control"
+                                        placeholder="Officer observation"
+                                        id="observation"
+                                        style={{ height: "100px", width: "450px" }}
+                                        value={moreInformation.shortStatement}
+                                        required
+                                        onChange={(e) => setMoreInformation({ ...moreInformation, shortStatement: e.target.value })}
+                                    ></textarea>
+
+                                    <label htmlFor="purpose">Police officer short statement</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button className="btn btn-primary btn-sm" onClick={handleCompleteCase}>Complete case</button>
+                            </td>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
+                <div>
+                    {showAnswersModal && <AnsweredQuestionView
+                        toggleModal={toggleShowAnswers}
+                        modalIsOpen={showAnswersModal}
+                        questions={data.answers}
+                    />}
+                </div>
 
             </div>
         </>

@@ -53,7 +53,7 @@ const TerminatedCasesView = ({ reviewedData }) => {
         for (let i = 0; i < reviewedData.length; i++) {
             console.log("hello");
             const reviewedCase = reviewedData[i]
-            if (reviewedCase.caseStatus === "REVIEWED") {
+            if (reviewedCase.ParticipantReportStatus === "all-answered") {
                 count++
                 dataStatus.push(reviewedCase)
             }
@@ -110,23 +110,24 @@ const TerminatedCasesView = ({ reviewedData }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((caseData, index) => (
-                                    <tr key={index}>
-                                        {/* Add the necessary columns based on your data */}
-                                        <td>{index + 1}</td>
-                                        <td>{caseData.participants[0].driver.firstname} {caseData.participants[0].driver.lastname}</td>
-                                        <td>{caseData.participants[0].driver.drivingLicense}</td>
-                                        <td><p className="d-flex justify-content-center">{caseData.participants[0].vehicleInfo.plateNo}</p></td>
-                                        <td>{caseData.location.province}</td>
-                                        <td>{formatTextDateInput(caseData.createdAt)}</td>
-                                        <td><span className="badge rounded-pill bg-success">Completed review</span></td>
-                                    </tr>
-                                ))}
+                                {data.map((caseData, index) => {
+                                    let renderedRowCount = 0;
+                                    return caseData.participants.map((participant, participantIndex) => (
+                                        (<tr key={`${index}-${participantIndex}`}>
+                                            <td>{++renderedRowCount}</td>
+                                            <td>{participant.driver.firstname} {participant.driver.lastname}</td>
+                                            <td>{participant.driver.drivingLicense}</td>
+                                            <td><p className="d-flex justify-content-center">{participant.vehicleInfo.plateNo}</p></td>                                        <td>{caseData.location.province}</td>
+                                            <td>{formatTextDateInput(caseData.createdAt)}</td>
+                                            <td><span className="badge rounded-pill bg-success">Completed review</span></td>
+                                        </tr>)
+                                    ))
+                                })}
                             </tbody>
                         </table> : (<div>
                             <div className="d-flex justify-content-center mt-5">
                                 <div className="d-flex flex-column">
-                                    <i class="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i>
+                                <div className="d-flex justify-content-center"> <i className="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i></div>
                                     <p style={{ fontSize: '2rem' }} className="mt-3">No leave requests</p>
                                 </div>
                             </div>

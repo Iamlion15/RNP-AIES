@@ -10,9 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 // import ChooseSearchType from "./chooseSearchTypeModal";
 import 'react-toastify/dist/ReactToastify.css';
 import TerminatedCasesView from "./terminatedCaseView";
-
 import { formatTextDateInput } from "../../helpers/dateHelper";
-import ReviewCaseModal from "@/components/Modals/ReviewSceneModal";
 
 
 
@@ -26,10 +24,9 @@ const AllCasesDashboard = () => {
         role: "lineManager"
     })
     const [dataPresent, setDataPresent] = useState(false)
+    const [renderedRowCount, setRenderedRowCount] = useState(0);
     const [activeTab, setActiveTab] = useState("Pending");
-    const [showReviewCaseModal, setShowReviewCaseModal] = useState(false)
     const [showLeaveDetails, setShowLeaveDetails] = useState(false)
-    const [caseid, setCaseid] = useState()
     const [reviewData, setReviewData] = useState([])
     const [leaveDetails, setLeaveDetails] = useState({
         leaveType: "",
@@ -48,13 +45,6 @@ const AllCasesDashboard = () => {
     }
     const toggleSearchType = () => {
         setShowSearchType(!showSearchType)
-    }
-    const toggleReviewCaseModal = () => {
-        setShowReviewCaseModal(!showReviewCaseModal)
-    }
-    const initiateReviewCase = (casedata) => {
-        setCaseid(casedata._id)
-        setShowReviewCaseModal(true)
     }
     const initiateShowLeaveDetails = (leave) => {
         setLeaveDetails({
@@ -105,7 +95,6 @@ const AllCasesDashboard = () => {
             const requestParams = {
                 OPG: user_id
             }
-            console.log(user_id);
             const response = await axios.post("http://localhost:8000/api/case/police/getcases", requestParams, config);
             const pendingData = [];
             let count = 0
@@ -113,7 +102,7 @@ const AllCasesDashboard = () => {
             if (response.data.dataPresent) {
                 for (let i = 0; i < response.data.cases.length; i++) {
                     const pendingCases = response.data.cases[i]
-                    if (pendingCases.caseStatus === "PENDING") {
+                    if (pendingCases.ParticipantReportStatus === "pending") {
                         count++
                         pendingData.push(pendingCases)
                     }
@@ -132,32 +121,11 @@ const AllCasesDashboard = () => {
         }
     };
 
-    const handleReview = async () => {
-        const config = {
-            headers: {
-                'Content-Type': "application/json",
-                'Authorization': `Bearer ${token}`
-            }
-        }
-        try {
-            await axios.put(`${API}/leave/actualleave/hrmanager/review`, approveData, config)
-            toast.success("successfully reviewed!", {
-                position: toast.POSITION.TOP_LEFT,
-                autoClose: 5000
-            });
-            toggleApproveModal()
-        } catch (error) {
-            console.log(error)
-            toast.error("Failure!", {
-                position: toast.POSITION.TOP_LEFT,
-                autoClose: 5000
-            });
-        }
-    }
+  
 
     useEffect(() => {
         fetchData()
-    }, [showReviewCaseModal, showLeaveDetails])
+    }, [ showLeaveDetails])
 
     // const filteredData = data.filter(searchedLeave => {
     //     let nestedValue;
@@ -250,9 +218,8 @@ const AllCasesDashboard = () => {
                                     {data.map((caseData, index) => {
                                         let renderedRowCount = 0;
                                         return caseData.participants.map((participant, participantIndex) => (
-                                            participant.ReportStatus === "pending" &&
                                             (<tr key={`${index}-${participantIndex}`}>
-                                                <td>{renderedRowCount + 1}</td>
+                                                <td>{++renderedRowCount}</td>
                                                 <td>{participant.driver.firstname} {participant.driver.lastname}</td>
                                                 <td>{participant.driver.drivingLicense}</td>
                                                 <td><p className="d-flex justify-content-center">{participant.vehicleInfo.plateNo}</p></td>
@@ -272,11 +239,11 @@ const AllCasesDashboard = () => {
                                                         </DropdownToggle>
                                                         <DropdownMenu className="dropdown-menu-arrow" end>
                                                             <DropdownItem
-                                                                onClick={() => initiateReviewCase(caseData)}
+                                                                
                                                             >
                                                                 <div className='d-flex flex-row'>
                                                                     <i className="bi bi-box-seam" style={{ fontWeight: "bold" }}></i>
-                                                                    <strong><p className='mx-3 my-0 py-0 text-muted'>Review</p></strong>
+                                                                    <strong><p className='mx-3 my-0 py-0 text-muted'>Detailed report</p></strong>
                                                                 </div>
                                                             </DropdownItem>
                                                             <DropdownItem
@@ -299,7 +266,7 @@ const AllCasesDashboard = () => {
                             </table> : (<div>
                                 <div className="d-flex justify-content-center mt-5">
                                     <div className="d-flex flex-column">
-                                        <i class="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i>
+                                    <div className="d-flex justify-content-center"> <i className="bi bi-exclamation-triangle" style={{ fontSize: "7rem", color: "#007bff" }} ></i></div>
                                         <p style={{ fontSize: '2rem' }} className="mt-3">No pending cases</p>
                                     </div>
                                 </div>
@@ -308,13 +275,7 @@ const AllCasesDashboard = () => {
                         </div>
                     </div> : <TerminatedCasesView reviewedData={reviewData} />}
                 </div>
-                <div>
-                    {showReviewCaseModal && <ReviewCaseModal
-                        modalIsOpen={showReviewCaseModal}
-                        toggleModal={toggleReviewCaseModal}
-                        caseid={caseid}
-                    />}
-                </div>
+               
                 {/* <div>
                     {showLeaveDetails && <ActualLeaveRequestDetails
                         modalIsOpen={showLeaveDetails}
