@@ -65,7 +65,6 @@ useEffect(() => {
 return (
     <>
         <div className="font-monospace mt-0" style={{ width: "110%" }}>
-            <p><strong> All pending cases</strong></p>
             <div className="card rounded-3 shadow-sm">
                 <table className="table table-borderless">
                     <thead>

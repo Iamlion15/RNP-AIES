@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import DashboardCard from "@/components/dashboardComponent/ApproversDashboardCard";
 import axios from "axios";
 import DoughnutChart from "@/components/reporting/dognut";
-import LineChart from "@/components/reporting/lineChart";
+import Select from "react-select";
+import CaseDoughnutChart from "@/components/reporting/caseReportDognut";
 
 
 const Dashboard = () => {
     const [data, setData] = useState({
-        pending: "",
-        approved: ""
+        answered: "",
+        notanswered: "",
+        complete:""
     })
     useEffect(async () => {
         const config = {
@@ -18,11 +20,13 @@ const Dashboard = () => {
             }
         }
         try {
-            const response = await axios.get("http://localhost:5000/api/document/rsbstatistics", config);
+            const user_id = JSON.parse(localStorage.getItem("loggedInUser"))._id
+            const response = await axios.post("http://localhost:8000/api/statistics/statspercase",{userid:user_id}, config);
             console.log(response.data);
             setData({
-                pending: response.data.pending,
-                approved: response.data.approved,
+                answered: response.data.answered,
+                notanswered: response.data.notanswered,
+                complete:response.data.complete
             })
         } catch (error) {
             console.log(error)
@@ -31,16 +35,29 @@ const Dashboard = () => {
     return (
         <>
             <div className="row mt-5">
-                <DashboardCard color="bg-warning" message="Not-answered case(s)" icon="bi-stopwatch" number={data.pending} />
-                <DashboardCard color="bg-success" message="Answered case(s)" icon="bi-file-earmark-check-fill" number={data.approved} />
-                <DashboardCard color="bg-primary" message="Complete police decision case(s)" icon="bi-file-earmark-check-fill" number={data.approved} />
+                <DashboardCard color="bg-warning" message="Not-answered case(s)" icon="bi-stopwatch" number={data.answered} />
+                <DashboardCard color="bg-success" message="Answered case(s)" icon="bi-back mx-2" number={data.notanswered} />
+                <DashboardCard color="bg-primary" message="police reviewed case(s)" icon="bi-file-earmark-check-fill" number={data.complete} />
             </div>
-            <div className="row mt-5">
-                <div className="col-6">
-                <DoughnutChart/>
+            <div className="row">
+                <div className="col-6 mt-5">
+                    <DoughnutChart statsdata={data}/>
                 </div>
-                <div className="col-6">
-                <LineChart/>
+                <div className="col-6 mt-5">
+                    <div className="row">
+                        <div className="col-6">
+                        <Select
+                                    // onChange={(e) => setActualLeave({ ...actualLeave, actingPersonCode: e.value })}
+                                    // options={listOfActingPerson.map((actingPerson) => ({
+                                    //     value: actingPerson.empCode,
+                                    //     label: actingPerson.empNames
+                                    // }))}
+                                />
+                        </div>
+                        <div className="col-6">
+                        <CaseDoughnutChart />
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

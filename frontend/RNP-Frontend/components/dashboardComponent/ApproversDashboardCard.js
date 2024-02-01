@@ -9,7 +9,7 @@ const DashboardCard = ({color,message,icon,number}) => {
                             <i className={`bi ${icon} mx-4`}></i>
                             </div>
                         </div>
-                        <div className="d-flex flex-column mt-2">
+                        <div className="d-flex flex-row mt-2">
                             <p className="font-monospace text-dark">{message}</p>
                             <p className="font-monospace d-flex justify-content-end mx-4"><strong><em>{number}</em></strong></p>
                         </div>

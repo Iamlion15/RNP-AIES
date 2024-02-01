@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-const DoughnutChart = ({statsdata}) => {
-    console.log(statsdata.answered);
+const CaseDoughnutChart = ({statsdata}) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -12,9 +11,9 @@ const DoughnutChart = ({statsdata}) => {
       }
   
     const data = {
-      labels: ['pending', 'Answered', 'police reviewed'],
+      labels: ['pending', 'Completed'],
       datasets: [{
-        data: [statsdata.notanswered, statsdata.answered, statsdata.complete],
+        data: [0,60],
         backgroundColor: ['#62C1C1', '#92C348', '#EC6362', ],
         hoverBackgroundColor: ['#62C1C1', '#92C348', '#EC6362', ],
         borderWidth: 0,
@@ -40,12 +39,6 @@ const DoughnutChart = ({statsdata}) => {
         data: data,
         options: options,
       });
-
-    // new Chart(ctx, {
-    //   type: 'doughnut',
-    //   data: data,
-    //   options: options,
-    // });
   }, [statsdata]);
 
   return (  
@@ -56,4 +49,4 @@ const DoughnutChart = ({statsdata}) => {
   );
 };
 
-export default DoughnutChart;
+export default CaseDoughnutChart;

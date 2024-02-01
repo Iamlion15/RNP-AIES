@@ -81,7 +81,6 @@ const PendingCasesToAnswer = ({ token }) => {
     return (
         <>
             <div className="font-monospace mt-0" style={{ width: "110%" }}>
-                <p><strong> All pending cases</strong></p>
                 <div className="card rounded-3 shadow-sm">
                     <table className="table table-borderless">
                         <thead>
@@ -114,7 +113,6 @@ const PendingCasesToAnswer = ({ token }) => {
                                         <th>Location</th>
                                         <th>OPG in charge</th>
                                         <th>Time of occurence</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody style={{ cursor: "pointer" }}>
@@ -125,28 +123,6 @@ const PendingCasesToAnswer = ({ token }) => {
                                                 <td>{caseData.location.province},{caseData.location.district}</td>
                                                 <td>{caseData.OPG.firstname} {caseData.OPG.lastname}</td>
                                                 <td>{formatTextDateInput(caseData.createdAt)}</td>
-                                                <td>
-                                                    <UncontrolledDropdown>
-                                                        <DropdownToggle
-                                                            role="button"
-                                                            size="sm"
-                                                            color=""
-                                                            onClick={(e) => e.preventDefault()}
-                                                        >
-                                                            <i className="bi bi-three-dots-vertical"></i>
-                                                        </DropdownToggle>
-                                                        <DropdownMenu className="dropdown-menu-arrow" end>
-                                                            <DropdownItem
-                                                                onClick={() => showModifyData(question)}
-                                                            >
-                                                                <div className='d-flex flex-row'>
-                                                                    <i className="bi bi-box-seam" style={{ fontWeight: "bold" }}></i>
-                                                                    <strong><p className='mx-3 my-0 py-0 text-muted'>Detailed report</p></strong>
-                                                                </div>
-                                                            </DropdownItem>
-                                                        </DropdownMenu>
-                                                    </UncontrolledDropdown>
-                                                </td>
                                             </tr>
                                         );
                                     })}
