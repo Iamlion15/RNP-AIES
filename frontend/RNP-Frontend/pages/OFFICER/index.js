@@ -8,6 +8,7 @@ import AllCasesDashboard from "./allCasesView";
 import CompletedReviewAndAnswering from "./completeReviewedCases";
 import FinalReportView from "./finalReport";
 import CasesHistoryview from "./CaseHistory";
+import Dashboard from "./dashboard";
 
 
 
@@ -26,7 +27,10 @@ const Index = () => {
                     </div>
                 <div className="col-10">
                     <HeaderComponent page={page} logout={Logout} style={{ width: '100%' }}/>
-                    <div className="mt-4 p-4">  
+                    <div className="mt-3 p-4">  
+                    {page === "Dashboard" && (
+                            <Dashboard style={{ width: '100%' }}/>
+                        )}
                         {page === "Review scene" && (
                             <CaseScenario  style={{ width: '100%' }}/>
                         )}

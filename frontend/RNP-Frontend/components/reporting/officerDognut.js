@@ -12,11 +12,11 @@ const DoughnutChart = ({statsdata}) => {
       }
   
     const data = {
-      labels: ['pending', 'Answered', 'police reviewed'],
+      labels: ['pending', 'Completed review', 'Closed'],
       datasets: [{
-        data: [statsdata.notanswered, statsdata.answered, statsdata.complete],
-        backgroundColor: ['#62C1C1', '#92C348', '#EC6362', ],
-        hoverBackgroundColor: ['#62C1C1', '#92C348', '#EC6362', ],
+        data: [statsdata.pending, statsdata.completed, statsdata.closed],
+        backgroundColor: ['#62C1C1', '#EC6362','#92C348' ],
+        hoverBackgroundColor: ['#62C1C1', '#EC6362', '#92C348'],
         borderWidth: 0,
         hoverBorderWidth: 2,
       }],

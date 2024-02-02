@@ -5,9 +5,9 @@ import Logout from "@/helpers/logout";
 import HeaderComponent from "@/components/Header/Header";
 import AddOfficer from "./addOfficer";
 import PoliceOfficersView from "./policeOfficersView";
-import Messages from "./Messages";
 import AddQuestions from "./addQuestions";
 import ListOfQuestions from "./listOfQuestions";
+import Dashboard from "./dashboard";
 
 
 
@@ -29,6 +29,9 @@ const Index = () => {
                     <div className="mt-4 p-4">  
                         {page === "Add officer" && (
                             <AddOfficer  style={{ width: '100%' }}/>
+                        )}
+                         {page === "Dashboard" && (
+                            <Dashboard style={{ width: '100%' }}/>
                         )}
                          {page === "Police officers" && (
                             <PoliceOfficersView  style={{ width: '100%' }}/>

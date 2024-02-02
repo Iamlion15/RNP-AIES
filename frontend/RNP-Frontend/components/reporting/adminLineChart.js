@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { Chart } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 const LineChart = ({statspermonth}) => {
+    console.log(statspermonth);
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -81,7 +83,7 @@ const LineChart = ({statspermonth}) => {
 
   return (
     <div style={{ width: '105%', margin: 'auto' }}>
-      <canvas ref={chartRef} height={200}></canvas>
+      <canvas ref={chartRef} height={120}></canvas>
     </div>
   );
 };

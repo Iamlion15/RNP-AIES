@@ -1,46 +1,6 @@
 const caseModel = require("../model/caseModel")
 const { formatTextDateInput } = require("../helpers/dateHelper")
-exports.documentStatistics = async (req, res) => {
-    try {
-        const approvals = await DocumentApproval.find();
-
-        let approvedCount = 0;
-        let pendingCount = 0;
-        let canceledCount = 0;
-        let underReviewCount = 0;
-
-        for (const approval of approvals) {
-            const hasRABApproved = approval.RAB_Approval.approved;
-            const hasRICAApproved = approval.RICA_Approval.approved;
-            const hasRSBApproved = approval.RSB_Approval.approved;
-            const hasAnyApprovalTime = approval.RAB_Approval.timeOfApproval || approval.RICA_Approval.timeOfApproval || approval.RSB_Approval.timeOfApproval;
-
-            if (hasRABApproved && hasRICAApproved && hasRSBApproved) {
-                approvedCount++;
-            } else if (hasRABApproved && hasRSBApproved && !hasRICAApproved) {
-                underReviewCount++;
-            } else if (!hasRABApproved && !hasRICAApproved && !hasRSBApproved) {
-                if (hasAnyApprovalTime) {
-                    canceledCount++;
-                } else {
-                    pendingCount++;
-                }
-            } else {
-                pendingCount++;
-            }
-        }
-
-        res.status(200).json({
-            "approved": approvedCount,
-            "underReview": underReviewCount,
-            "pending": pendingCount,
-            "canceled": canceledCount
-        });
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(400).json({ "error": err });
-    }
-}
+const UserModel=require("../model/userModel")
 
 exports.CountCitizenDocuments = async (req, res) => {
     try {
@@ -104,7 +64,7 @@ exports.countStatsPerDocument = async (req, res) => {
                 caseCompleted: false,
                 caseClosed: false
             }
-            participantDetails.casename = "case-" + formatTextDateInput(cases[i].createdAt)
+            participantDetails.casename = " Case" + "-" + (i + 1) + "-" + formatTextDateInput(cases[i].createdAt) + " "
             for (let a = 0; a < searchcases.participants.length; a++) {
                 let findParticipant = cases[i].participants[a]
                 if (findParticipant.driver._id.toString() === req.body.userid) {
@@ -137,126 +97,107 @@ exports.countStatsPerDocument = async (req, res) => {
                 participantCase = [{ casename: participantDetails.casename, caseNotanswered: participantDetails.caseNotanswered, caseAnswered: !participantDetails.caseNotanswered, caseCompleted: participantDetails.caseCompleted, percentage: count }]
             }
         }
-        console.log(participantCase);
+        res.status(200).json(participantCase);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
     }
 };
 
-exports.CountDocumentsByRICAApproval = async (req, res) => {
+exports.countOfficerStatistics = async (req, res) => {
     try {
-        const countApproved = await DocumentApproval.countDocuments({ 'RICA_Approval.approved': true });
-        const countNotApproved = await DocumentApproval.countDocuments({
-            'RAB_Approval.approved': true,
-            'RSB_Approval.approved': true,
-            'RICA_Approval.approved': false
-        });
+        let officerCase = [];
+        let howManyCases = 0;
+        let countPendingCases = 0
+        let countCompletedReviewCases = 0
+        let countClosedCases = 0
+        const cases = await caseModel.find({ OPG: req.body.userid }).populate({ path: "participants", populate: { path: "driver vehicleInfo" } })
+        for (let i = 0; i < cases.length; i++) {
+            let searchcases = cases[i];
+            let participantDetails = {
+                caseReviewed: false,
+                caseNotReviewed: false,
+                caseClosed: false
+            }
+            let completeCaseInfo = {
+                howManyParticipants: searchcases.participants.length,
+                count: 0
+            }
+            for (let a = 0; a < searchcases.participants.length; a++) {
+                let findParticipant = cases[i].participants[a]
+                for (let x = 0; x < findParticipant.answers.length; x++) {
+                    if (findParticipant.answers[x].answer === "") {
+                        participantDetails.caseNotReviewed = true
+                        break;
+                    }
+                }
+                if (findParticipant.caseStatus === "COMPLETE") {
+                    completeCaseInfo.count++;
 
-        res.status(200).json({
-            approved: countApproved || 0,
-            pending: countNotApproved || 0,
-        });
-    } catch (err) {
-        console.error(err);
+                }
+            }
+            if (searchcases.caseStatus === "COMPLETE") {
+                participantDetails.caseClosed = true
+            }
+            if (completeCaseInfo.count === completeCaseInfo.howManyParticipants) {
+                participantDetails.caseReviewed = true
+            }
+            officerCase.push(participantDetails)
+        }
+        howManyCases = officerCase.length;
+        for (let i = 0; i < officerCase.length; i++) {
+            if (officerCase[i].caseClosed) {
+                countClosedCases++
+            } 
+            if (officerCase[i].caseNotReviewed) {
+                countPendingCases++
+            } 
+            if (officerCase[i].caseReviewed) {
+                countCompletedReviewCases++
+            }
+        }
+        res.status(200).json({ "numberOfCases":howManyCases,"closedCases":countClosedCases,"pendingCases":countPendingCases,"reviewedCases":countCompletedReviewCases});
+    } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Server error' });
     }
+}
+
+
+
+exports.calculateCasesPerMonth = async (req,res) => {
+  try {
+    const allCases = await caseModel.find();
+    const countsPerMonth = Array.from({ length: 12 }, () => 0);
+    allCases.forEach((singleCase) => {
+      const createdAt = new Date(singleCase.createdAt);
+      const monthIndex = createdAt.getMonth(); 
+      countsPerMonth[monthIndex]++;
+    });
+
+    res.status(200).json(countsPerMonth);
+  } catch (error) {
+    console.error('Error calculating cases per month:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
 
-exports.getDocumentInRange = async (req, res) => {
-    const { startDate, endDate, organisation } = req.body;
+exports.adminStats = async (req,res) => {
     try {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        if (organisation === "RAB") {
-            const count = await DocumentApproval.countDocuments({
-                'RAB_Approval.timeOfApproval': { $gte: start, $lte: end }
-            });
-            const documents = await DocumentApproval.find({
-                'RAB_Approval.timeOfApproval': { $gte: start, $lte: end }
-            }).populate("owner").populate("document");
-
-            res.status(200).json({ count, documents });
+      const allCases = await caseModel.find();
+      const OGP=await UserModel.find({role:"POLICE OFFICER"})
+      let closedCases=0
+      for(let i=0;i<allCases.length;i++){
+        if(allCases[i].caseStatus==="COMPLETE"){
+            closedCases++
         }
-        else if (organisation === "RSB") {
-            const count = await DocumentApproval.countDocuments({
-                'RSB_Approval.timeOfApproval': { $gte: start, $lte: end }
-            });
-            const documents = await DocumentApproval.find({
-                'RSB_Approval.timeOfApproval': { $gte: start, $lte: end }
-            }).populate("owner").populate("document");
-
-            res.status(200).json({ count, documents });
-        }
-        else {
-            if (organisation === "RICA") {
-                const count = await DocumentApproval.countDocuments({
-                    'RICA_Approval.timeOfApproval': { $gte: start, $lte: end }
-                });
-                const documents = await DocumentApproval.find({
-                    'RICA_Approval.timeOfApproval': { $gte: start, $lte: end }
-                }).populate("owner").populate("document");
-                res.status(200).json({ count, documents });
-            }
-        }
-
+      }
+      res.status(200).json({"closedcases":closedCases,"numberofOGP":OGP.length,"numberOfCases":allCases.length});
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+      console.error('Error calculating cases per month:', error);
+      res.status(500).json({ error: 'Server error' });
     }
-};
-
-exports.getPendingDocumentInRange = async (req, res) => {
-    const { startDate, endDate, organisation } = req.body;
-    try {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        if (organisation === "RAB") {
-            const count = await DocumentApproval.countDocuments({
-                'RAB_Approval.approved': false,
-                createdAt: { $gte: start, $lte: end }
-            });
-            const documents = await DocumentApproval.find({
-                'RAB_Approval.approved': false,
-                createdAt: { $gte: start, $lte: end }
-            }).populate("owner").populate("document");
-            res.status(200).json({ count, documents });
-        }
-        else if (organisation === "RSB") {
-            const count = await DocumentApproval.countDocuments({
-                'RAB_Approval.approved': true,
-                'RSB_Approval.approved': false,
-                createdAt: { $gte: start, $lte: end }
-            });
-            const documents = await DocumentApproval.find({
-                'RAB_Approval.approved': false,
-                createdAt: { $gte: start, $lte: end }
-            }).populate("owner").populate("document");
-            res.status(200).json({ count, documents });
-        }
-        else {
-            if (organisation === "RICA") {
-                const count = await DocumentApproval.countDocuments({
-                    'RAB_Approval.approved': true,
-                    'RSB_Approval.approved': true,
-                    'RICA_Approval.approved': false,
-                    createdAt: { $gte: start, $lte: end }
-                });
-                const documents = await DocumentApproval.find({
-                    'RAB_Approval.approved': false,
-                    createdAt: { $gte: start, $lte: end }
-                }).populate("owner").populate("document");
-                res.status(200).json({ count, documents });
-            }
-        }
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
+  };
 
 

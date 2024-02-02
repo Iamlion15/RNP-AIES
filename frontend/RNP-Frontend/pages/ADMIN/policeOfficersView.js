@@ -6,7 +6,6 @@ import {
     DropdownItem,
 } from 'reactstrap';
 import axios from "axios";
-import MessageModal from "@/components/Modals/MessageModal";
 import DeleteModal from "@/components/Modals/deleteModal";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -172,14 +171,6 @@ const PoliceOfficersView = () => {
                                                                 <p className='mx-3 my-0 py-0'>Delete</p>
                                                             </div>
                                                         </DropdownItem>
-                                                        <DropdownItem
-                                                            onClick={() => showMessageModal(officer)}
-                                                        >
-                                                            <div className='d-flex flex-row'>
-                                                            <i class="bi bi-chat-left-text-fill"></i>
-                                                                <p className='mx-3 my-0 py-0'>Send message</p>
-                                                            </div>
-                                                        </DropdownItem>
                                                     </DropdownMenu>
                                                 </UncontrolledDropdown>
                                             </td>
@@ -204,18 +195,9 @@ const PoliceOfficersView = () => {
                     <DeleteModal
                         toggleModal={setDeleteModal}
                         modalIsOpen={deleteModal}
-                        id={deleteId}
-                        ToastContainer={ToastContainer}
+                        data={deleteId}
                     />
                 )}
-                {sendMessageModal && (
-                        <MessageModal
-                            toggleModal={toggleMessageModal}
-                            modalIsOpen={sendMessageModal}
-                            data={messageData}
-                            ToastContainer={ToastContainer}
-                        />
-                    )}
                 <div>
                     <ToastContainer />
                 </div>

@@ -129,6 +129,15 @@ exports.deleteQuestion = async (req, res) => {
     }
 }
 
+exports.deleteOfficer = async (req, res) => {
+    try {
+        await userModel.findOneAndDelete({ _id: req.params.userid })
+        res.status(200).json({ "message": "successfully deleted officer" })
+    } catch (error) {
+        res.status(400).json({ "message": error })
+    }
+}
+
 exports.getCases = async (req, res) => {
     console.log(req.body)
     try {
