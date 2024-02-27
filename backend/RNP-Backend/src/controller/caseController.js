@@ -44,7 +44,7 @@ exports.startCase = async (req, res) => {
             }
             if (!isVehiclePresent) {
                 let vehicleDetail = new vehicleModel({
-                    plateNo: ParticipantData[i].plateNo,
+                    plateNo: ParticipantData[i].plateNo.toUpperCase().trim(),
                     insuranceProvider: ParticipantData[i].insuranceProvider,
                     insuranceNumber: ParticipantData[i].insuranceNumber
                 })
@@ -288,4 +288,13 @@ exports.getCarByPlate = async (req, res) => {
         res.status(400).json({ "message": err.message });
     }
 };
+
+exports.getInsuranceCopy = async (req, res) => {
+    try {
+        const data = await caseModel.findOne({_id:req.body.caseid})
+         res.status(200).sendFile(data.file)
+    } catch (error) {
+        res.status(400).json({ "message": error })
+    }
+}
 

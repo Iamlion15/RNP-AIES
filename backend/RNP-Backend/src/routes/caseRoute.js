@@ -4,7 +4,7 @@ const uploadDocument = require("../middlewares/uploadDocument")
 const { checkPoliceAdminAuthorization,checkPoliceOfficerAuthorization,checkCitizenuthorization} = require("../middlewares/checkAuthorization")
 
 
-const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion,getCasesByUser,getUserByEmail,answerToCases,policeReviewCase,completeCase,deleteOfficer} = require("../controller/caseController")
+const {  startCase,addQuestions,getCases,ListOfQuestions,UpdateQuestion,deleteQuestion,getCasesByUser,getUserByEmail,answerToCases,policeReviewCase,completeCase,deleteOfficer,getInsuranceCopy} = require("../controller/caseController")
 
 
 router.post("/startcase", checkAuthentication, checkPoliceOfficerAuthorization, startCase)
@@ -13,6 +13,7 @@ router.get('/get/questions',checkAuthentication,checkPoliceAdminAuthorization,Li
 router.delete('/delete/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,deleteQuestion)
 router.post('/update/question/:questionid',checkAuthentication,checkPoliceAdminAuthorization,UpdateQuestion)
 router.post('/getcases',checkAuthentication,checkCitizenuthorization,getCases)
+router.post('/police/getinsurancecopy',checkAuthentication,checkPoliceOfficerAuthorization,getInsuranceCopy)
 router.post('/police/getcases',checkAuthentication,checkPoliceOfficerAuthorization,getCases)
 router.get('/getcases/:userId',checkAuthentication,checkCitizenuthorization,getCasesByUser)
 router.post('/getuser',checkAuthentication,checkPoliceOfficerAuthorization,getUserByEmail)

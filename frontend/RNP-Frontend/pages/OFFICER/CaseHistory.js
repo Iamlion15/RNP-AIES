@@ -64,6 +64,45 @@ const CasesHistoryview = () => {
         }
     };
 
+    const getFile = async (id) => {
+        const config = {
+          responseType: 'blob', // Set response type to blob for binary data
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': JSON.parse(localStorage.getItem('token')),
+          },
+        };
+      
+        try {
+          const response = await axios.post(
+            'http://localhost:8000/api/case/police/getinsurancecopy',
+            { caseid: id },
+            config
+          );
+      
+          if (response.status === 200) {
+            const filename = response.headers['content-disposition']?.split('filename=')[1]; // Extract filename from headers if available
+            const blob = response.data;
+            const url = window.URL.createObjectURL(blob); // Create temporary URL
+            if (navigator.download !== undefined) {
+              // Use browser's download API if supported:
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = filename || 'insurance_copy.pdf'; // Use default filename if none provided
+              link.click();
+            } else {
+              // Fallback for browsers that don't support download API:
+              window.open(url, '_blank'); // Open the file in a new tab
+            }
+          } else {
+            console.error(`Error downloading file: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Error fetching file:', error);
+        } 
+      };
+      
+
     useEffect(() => {
         fetchData()
     }, [])
@@ -136,7 +175,7 @@ const CasesHistoryview = () => {
                                                                 </div>
                                                             </DropdownItem>
                                                             <DropdownItem
-                                                                onClick={() => initiateReviewCase(caseData)}
+                                                                onClick={() => getFile(caseData._id)}
                                                             >
                                                                 <div className='d-flex flex-row'>
                                                                     <i className="bi bi-box-seam" style={{ fontWeight: "bold" }}></i>

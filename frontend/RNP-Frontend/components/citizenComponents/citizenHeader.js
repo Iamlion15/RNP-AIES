@@ -7,7 +7,7 @@ import {
 } from 'reactstrap';
 import UpdateUserModal from '../Modals/updateUserModal';
 import ChangeUserPasswordModal from '../Modals/changePasswordModal';
-import GenerateReportModal from '../Modals/generateReportModal';
+import VehicleReportModal from '../Modals/vehicleReport';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
@@ -108,14 +108,14 @@ const CitizenHeaderComponent = ({ page, logout }) => {
                                         <p className='mx-3 my-0 py-0 text-muted'>Change password</p>
                                     </div>
                                 </DropdownItem>
-                                {(user.role === "RAB" || user.role === "RSB" || user.role === "RICA") && (
-                                    <DropdownItem onClick={toggleReportModal}>
-                                        <div className='d-flex flex-row'>
-                                            <i class="bi bi-pencil-fill"></i>
-                                            <p className='mx-3 my-0 py-0 text-muted'>Review report</p>
-                                        </div>
-                                    </DropdownItem>
-                                )}
+                                {(user.role === "CITIZEN") && (
+                                        <DropdownItem onClick={toggleReportModal}>
+                                            <div className='d-flex flex-row'>
+                                                <i class="bi bi-pencil-fill"></i>
+                                                <p className='mx-3 my-0 py-0 text-muted'>Citizen report</p>
+                                            </div>
+                                        </DropdownItem>
+                                    )}
                                 <DropdownItem
                                     onClick={() => logout()}
                                 >
@@ -145,7 +145,7 @@ const CitizenHeaderComponent = ({ page, logout }) => {
                     />
                 </div>
                 <div>
-                    <GenerateReportModal
+                    <VehicleReportModal
                         modalIsOpen={reportModal}
                         toggleModal={toggleReportModal} />
                 </div>

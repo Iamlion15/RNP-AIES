@@ -1,6 +1,6 @@
 const caseModel = require("../model/caseModel")
 const { formatTextDateInput } = require("../helpers/dateHelper")
-const UserModel=require("../model/userModel")
+const UserModel = require("../model/userModel")
 
 exports.CountCitizenDocuments = async (req, res) => {
     try {
@@ -148,15 +148,15 @@ exports.countOfficerStatistics = async (req, res) => {
         for (let i = 0; i < officerCase.length; i++) {
             if (officerCase[i].caseClosed) {
                 countClosedCases++
-            } 
+            }
             if (officerCase[i].caseNotReviewed) {
                 countPendingCases++
-            } 
+            }
             if (officerCase[i].caseReviewed) {
                 countCompletedReviewCases++
             }
         }
-        res.status(200).json({ "numberOfCases":howManyCases,"closedCases":countClosedCases,"pendingCases":countPendingCases,"reviewedCases":countCompletedReviewCases});
+        res.status(200).json({ "numberOfCases": howManyCases, "closedCases": countClosedCases, "pendingCases": countPendingCases, "reviewedCases": countCompletedReviewCases });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server error' });
@@ -165,39 +165,83 @@ exports.countOfficerStatistics = async (req, res) => {
 
 
 
-exports.calculateCasesPerMonth = async (req,res) => {
-  try {
-    const allCases = await caseModel.find();
-    const countsPerMonth = Array.from({ length: 12 }, () => 0);
-    allCases.forEach((singleCase) => {
-      const createdAt = new Date(singleCase.createdAt);
-      const monthIndex = createdAt.getMonth(); 
-      countsPerMonth[monthIndex]++;
-    });
+exports.calculateCasesPerMonth = async (req, res) => {
+    try {
+        const allCases = await caseModel.find();
+        const countsPerMonth = Array.from({ length: 12 }, () => 0);
+        allCases.forEach((singleCase) => {
+            const createdAt = new Date(singleCase.createdAt);
+            const monthIndex = createdAt.getMonth();
+            countsPerMonth[monthIndex]++;
+        });
 
-    res.status(200).json(countsPerMonth);
-  } catch (error) {
-    console.error('Error calculating cases per month:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
+        res.status(200).json(countsPerMonth);
+    } catch (error) {
+        console.error('Error calculating cases per month:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
 
-exports.adminStats = async (req,res) => {
+exports.adminStats = async (req, res) => {
     try {
-      const allCases = await caseModel.find();
-      const OGP=await UserModel.find({role:"POLICE OFFICER"})
-      let closedCases=0
-      for(let i=0;i<allCases.length;i++){
-        if(allCases[i].caseStatus==="COMPLETE"){
-            closedCases++
+        const allCases = await caseModel.find();
+        const OGP = await UserModel.find({ role: "POLICE OFFICER" })
+        let closedCases = 0
+        for (let i = 0; i < allCases.length; i++) {
+            if (allCases[i].caseStatus === "COMPLETE") {
+                closedCases++
+            }
         }
-      }
-      res.status(200).json({"closedcases":closedCases,"numberofOGP":OGP.length,"numberOfCases":allCases.length});
+        res.status(200).json({ "closedcases": closedCases, "numberofOGP": OGP.length, "numberOfCases": allCases.length });
     } catch (error) {
-      console.error('Error calculating cases per month:', error);
-      res.status(500).json({ error: 'Server error' });
+        console.error('Error calculating cases per month:', error);
+        res.status(500).json({ error: 'Server error' });
     }
-  };
+};
+
+
+exports.casesReportDocument = async (req, res) => {
+    try {
+        const status = req.body.status;
+        const startDate = new Date(req.body.startDate);
+        const endDate = new Date(req.body.endDate)
+        const allCases = await caseModel.find({ caseStatus: status, createdAt: {
+            $gte: startDate,
+            $lte: endDate
+        } }).populate("OPG")
+        res.status(200).json({ allCases, "caseStatus": status })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
+exports.vehicleReport = async (req, res) => {
+    try {
+        const allCases = await caseModel.find().populate({ path: "participants", populate: { path: "driver vehicleInfo" } })
+        res.status(200).json({ allCases })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
+exports.IndividualReportDocument = async (req, res) => {
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate)
+    try {
+        const allCases = await caseModel.find({
+            createdAt: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).populate("OPG").populate({ path: "participants", populate: { path: "driver vehicleInfo" } })
+        res.status(200).json({ allCases })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
 
 

@@ -42,12 +42,14 @@ const PendingCasesToAnswer = ({ token }) => {
         try {
             const user_id = JSON.parse(localStorage.getItem("loggedInUser"))._id
             const response = await axios.get(`http://localhost:8000/api/case/getcases/${user_id}`, config);
+            console.log(response.data);
             const pendingData = [];
             let count = 0
             if (response.data.dataPresent) {
                 for (let i = 0; i < response.data.cases.length; i++) {
                     const pendingCases = response.data.cases[i]
-                    if (pendingCases.ReportStatus === "pending") {
+                    console.log("pendingg",pendingCases);
+                    if (pendingCases.ParticipantReportStatus === "pending") {
                         for (let a = 0; a < pendingCases.participants.length; a++) {
                             if (pendingCases.participants[a].driver._id === user_id) {
                                 count++
@@ -56,6 +58,7 @@ const PendingCasesToAnswer = ({ token }) => {
                         }
                     }
                 }
+                console.log(pendingData);
                 if (count > 0 && response.data.dataPresent) {
                     setData(pendingData);
                     setDataPresent(true)
