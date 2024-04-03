@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatTextDateInput } from "@/helpers/dateHelper";
 import AnsweredQuestionView from "@/components/Modals/answeredQuestions";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,6 +10,7 @@ const DetailedInformation = ({ data, caseDetails, toggleShowDetails }) => {
         cause: "",
         shortStatement: ""
     });
+    const [drunkTest, setDrunkTest] = useState(false)
     const [showAnswersModal, setShowAnswersModal] = useState(false);
     const toggleShowAnswers = () => {
         setShowAnswersModal(!showAnswersModal)
@@ -27,6 +28,7 @@ const DetailedInformation = ({ data, caseDetails, toggleShowDetails }) => {
             caseid: caseDetails.caseid,
             participantid: data._id
         }
+
         try {
             const response = await axios.put("http://localhost:8000/api/case/completecase", requestParams, config);
             toast.success("successfully answered to the question data!", {
@@ -39,6 +41,20 @@ const DetailedInformation = ({ data, caseDetails, toggleShowDetails }) => {
                 position: toast.POSITION.TOP_LEFT, autoClose: 5000
             });
         }
+    }
+    useEffect(() => {
+        if (data.drunk === true) {
+            setDrunkTest(true)
+            setMoreInformation({ ...moreInformation, cause: "Drunk" })
+        }
+        else {
+            setDrunkTest(false)
+        }
+    }, [])
+    const goBackToDefaultValue = (e) => {
+        e.preventDefault()
+        setDrunkTest(true)
+        setMoreInformation({ ...moreInformation, cause: "Drunk" })
     }
     return (
         <>
@@ -79,15 +95,27 @@ const DetailedInformation = ({ data, caseDetails, toggleShowDetails }) => {
                         <tr>
                             <td>Whats the primarily cause of this accident :</td>
                             <td>
-                                <div className="form-group">
-                                    <select className="form-select" value={moreInformation.cause} onChange={(e) => setMoreInformation({ ...moreInformation, cause: e.target.value })}>
-                                        <option >Choose</option>
-                                        <option value="drunkdness">Drunk</option>
-                                        <option value="overspeeding">Overspeeding</option>
-                                        <option value="car mantanaince issue">Car maintanaince problem</option>
-                                        <option value="uburangare">Uburangare</option>
-                                    </select>
+                                {drunkTest ? <div>
+                                    <div className="input-group mb-3">
+                                        <input type="text" className="form-control" defaultValue="Drunk" disabled={true} />
+                                        <div className="input-group-append">
+                                            <button className="btn btn-outline-secondary" type="button" onClick={() => setDrunkTest(false)}>Modify</button>
+                                        </div>
+                                    </div>
                                 </div>
+                                    :
+                                    <div>
+                                        <div className="form-group">
+                                            <select className="form-select" value={moreInformation.cause} onChange={(e) => setMoreInformation({ ...moreInformation, cause: e.target.value })}>
+                                                <option >Choose</option>
+                                                <option value="overspeeding">Overspeeding</option>
+                                                <option value="car mantanaince issue">Car maintanaince problem</option>
+                                                <option value="uburangare">Uburangare</option>
+                                            </select>
+                                        </div>
+                                        {data.drunk && <button className="btn btn-sm btn-primary" onClick={goBackToDefaultValue}>Default value</button>}
+                                    </div>
+                                }
                             </td>
                         </tr>
                         <tr>

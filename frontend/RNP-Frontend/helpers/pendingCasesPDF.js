@@ -14,8 +14,8 @@ const PendingCasesPDF = (dataa, pData) => {
   doc.setFont('CopperplateGothic', 'normal');
   // Logo in the top-left corner
   const newWidth = 100; // Set the new width you desire
-const aspectRatio = Logo.width / Logo.height;
-const newHeight = newWidth / aspectRatio;
+  const aspectRatio = Logo.width / Logo.height;
+  const newHeight = newWidth / aspectRatio;
   doc.addImage(imageSource, 'JPEG', -10, 0, newWidth, newHeight);
 
   // Current Date in the top-right corner
@@ -58,19 +58,16 @@ const newHeight = newWidth / aspectRatio;
   // Report Details
   const startY = 105;
   const lineHeight = 15;
-  let currentY = startY;
-
   const printData = dataa.map((data, index) => {
     const names = `${data.OPG.firstname} ${data.OPG.lastname}`;
     const location = `${data.location.province},${data.location.district}`;
     const tookplaceon = formatDateToCustomFormat(data.createdAt);
-
     return [index + 1, names, location, tookplaceon];
   });
 
   // Auto-generate a table in the PDF using autoTable
   doc.autoTable({
-    head: [['No.','OGP NAMES','LOCATION',  'TOOK PLACE ON']],
+    head: [['No.', 'OGP NAMES', 'LOCATION', 'TOOK PLACE ON']],
     body: printData,
     startY: startY,
     margin: { top: 5, bottom: 5 }, // Reduced top and bottom margin

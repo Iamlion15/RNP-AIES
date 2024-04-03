@@ -60,6 +60,27 @@ const CaseScenario = () => {
         try {
             const response = await axios.post("http://localhost:8000/api/case/startcase", serverData, config)
             toast.update(toastId.current, { render: "Successfully saved", type: toast.TYPE.SUCCESS, autoClose: 2000 })
+            setStep(1)
+            setLocationDetails({
+                province: "",
+                district: "",
+                sector: "",
+                cell: ""
+            })
+            setData([{
+                plateNo: "",
+                insuranceProvider: "",
+                insuranceNumber: "",
+                drunkTest: "",
+                owner: {
+                    firstname: "",
+                    lastname: "",
+                    nID: "",
+                    email: "",
+                    drivingLicense: ""
+        
+                }
+            }])
         } catch (error) {
             toast.update(toastId.current, { render: "Error in saving", type: toast.TYPE.ERROR, autoClose: 2000 })
             console.log(error);

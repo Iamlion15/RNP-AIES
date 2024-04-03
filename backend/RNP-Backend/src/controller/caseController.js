@@ -4,7 +4,7 @@ const caseModel = require("../model/caseModel")
 const QuestionModel = require("../model/questionsModel")
 const answerModel = require("../model/answerModel")
 const { checkIfAllHasBeenAnswered, checkIfAllParticipantHaveBeenReviewed } = require("../helpers/checkAnswers")
-const sendEMail=require("../helpers/caseEmailToParticipants")
+const sendEMail = require("../helpers/caseEmailToParticipants")
 const path = require("path")
 
 
@@ -28,6 +28,7 @@ exports.startCase = async (req, res) => {
             const isVehiclePresent = await vehicleModel.findOne({ plateNo: ParticipantData[i].plateNo })
             let participantId
             let vehicleId
+            const drunkTest = ParticipantData[i].drunkTest === "yes" ? true : false;
             if (!isUserPresent) {
                 let driver = new userModel({
                     firstname: ParticipantData[i].owner.firstname,
@@ -56,7 +57,8 @@ exports.startCase = async (req, res) => {
             participants[i] = {
                 driver: participantId._id,
                 vehicleInfo: vehicleId._id,
-                answers: questionArray
+                answers: questionArray,
+                drunk:drunkTest
             }
         }
 
@@ -67,7 +69,6 @@ exports.startCase = async (req, res) => {
                 sector: req.body.location.sector,
                 cell: req.body.location.cell,
             },
-            drunk: req.body.drunk,
             participants: participants,
             OPG: OPG
         })
@@ -187,25 +188,25 @@ exports.answerToCases = async (req, res) => {
 };
 exports.policeReviewCase = async (req, res) => {
     try {
-        const completedOn=new Date()
+        const completedOn = new Date()
         let fileLocation;
         let insuranceFileLocation;
-        if (req.files[0]&&req.files[1]) {
+        if (req.files[0] && req.files[1]) {
             fileLocation = path.resolve(req.files[0].path)
-            insuranceFileLocation=path.resolve(req.files[1].path)
+            insuranceFileLocation = path.resolve(req.files[1].path)
         } else {
             return res.status(400).json({ error: 'No file was uploaded' });
         }
-        const findCase = await caseModel.findOne({ _id: req.body.caseid }).populate({path: "participants",populate: { path: "driver vehicleInfo" }})
+        const findCase = await caseModel.findOne({ _id: req.body.caseid }).populate({ path: "participants", populate: { path: "driver vehicleInfo" } })
         for (let i = 0; i < findCase.participants.length; i++) {
-           const participant=findCase.participants[i];
-           const names=participant.driver.firstname+" "+participant.driver.lastname
-           const email=participant.driver.email;
-           sendEMail(email,names,insuranceFileLocation)
+            const participant = findCase.participants[i];
+            const names = participant.driver.firstname + " " + participant.driver.lastname
+            const email = participant.driver.email;
+            sendEMail(email, names, insuranceFileLocation)
         }
         findCase.file = fileLocation;
-        findCase.completedCaseOn=completedOn;
-        findCase.insuranceDocuments=insuranceFileLocation
+        findCase.completedCaseOn = completedOn;
+        findCase.insuranceDocuments = insuranceFileLocation
         findCase.OGPComment = req.body.policeOfficerComment
         findCase.caseStatus = "COMPLETE"
         await caseModel.findOneAndUpdate({ _id: findCase._id }, findCase)
@@ -291,8 +292,8 @@ exports.getCarByPlate = async (req, res) => {
 
 exports.getInsuranceCopy = async (req, res) => {
     try {
-        const data = await caseModel.findOne({_id:req.body.caseid})
-         res.status(200).sendFile(data.file)
+        const data = await caseModel.findOne({ _id: req.body.caseid })
+        res.status(200).sendFile(data.file)
     } catch (error) {
         res.status(400).json({ "message": error })
     }

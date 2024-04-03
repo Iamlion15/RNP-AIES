@@ -206,10 +206,12 @@ exports.casesReportDocument = async (req, res) => {
         const status = req.body.status;
         const startDate = new Date(req.body.startDate);
         const endDate = new Date(req.body.endDate)
-        const allCases = await caseModel.find({ caseStatus: status, createdAt: {
-            $gte: startDate,
-            $lte: endDate
-        } }).populate("OPG")
+        const allCases = await caseModel.find({
+            caseStatus: status, createdAt: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).populate("OPG")
         res.status(200).json({ allCases, "caseStatus": status })
     } catch (error) {
         console.log(error);

@@ -47,7 +47,8 @@ const caseSchema = new mongoose.Schema({
         },
         answers: [mongoose.Schema.Types.Mixed],
         drunk: {
-            type: Boolean
+            type: Boolean,
+            default:false
         },
         caseReviewed: {
             type: Boolean,

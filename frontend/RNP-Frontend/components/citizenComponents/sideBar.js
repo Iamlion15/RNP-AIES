@@ -3,7 +3,7 @@ import React from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import getSidebarItems from '@/constants/sidebarUtils';
 
-const SideNav = ({ setPage, addLeave, staffRole }) => {
+const SideNav = ({ setPage, logout }) => {
     const [sideBarItems, setSideBarItems] = useState([])
     const [activeItem, setActiveItem] = useState('Dashboard');
     const [hoveredItem, setHoveredItem] = useState('')
@@ -57,7 +57,7 @@ const SideNav = ({ setPage, addLeave, staffRole }) => {
                 </div>
                 <div className="fixed-bottom mb-4 mx-4">
                     <button className="btn btn-outline-primary"
-                        onClick={() => addLeave()}
+                        onClick={() => logout()}
                     >
                         <div className='d-flex flex-row'>
                             Logout
